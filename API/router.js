@@ -7,7 +7,19 @@ const router = express.Router();
 
 router.post("/", login);
 
+router.route("/")
+    .get((req, res) => {
+      res.render("login")
+    });
+
 router.post("/signin", createUser);
+
+router.route("/signin")
+    .get((req, res) => {
+      res.render("signin")
+    });
+
+router.post("/createUser", createUser);
 
 router.post("/busca", authenticateToken, async (req, res) => {
     const userId = req.user.userId;
@@ -19,7 +31,11 @@ router.post("/busca", authenticateToken, async (req, res) => {
     }
 });
 
-router.get("/cargas", authenticateToken, async (req, res) => {
+router.get("/cargas", async (req, res) => {
+  res.render("cargas")
+})
+
+router.get("/pagina-cargas", authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     try {
       const cargas = await getAllCargas(userId);
@@ -29,7 +45,7 @@ router.get("/cargas", authenticateToken, async (req, res) => {
     }
 });
 
-router.get("/cargas/:numCodigoAereo", authenticateToken, async (req, res) => {
+router.get("/pagina-cargas/:numCodigoAereo", authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     const numCodigoAereo = req.params.numCodigoAereo;
     try {
@@ -40,7 +56,7 @@ router.get("/cargas/:numCodigoAereo", authenticateToken, async (req, res) => {
     }
 });
 
-router.delete("/cargas/:numCodigoAereo", authenticateToken, async (req, res) => {
+router.delete("/pagina-cargas/:numCodigoAereo", authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     const numCodigoAereo = req.params.numCodigoAereo;
     try {

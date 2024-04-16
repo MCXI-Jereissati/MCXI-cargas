@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="./style/styles.css">
+    <title>Login</title>
+</head>
+<body>
+    <h1 class="text-red-700 text-5xl">
+        Hello world!
+      </h1>
+    <h1 class="text-3xl">Login</h1>
+    <form id="login-form">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br>
+        <label for="senha">Senha:</label><br>
+        <input type="password" id="senha" name="senha"><br><br>
+        <button type="submit">Login</button>
+        <a href='/signin'><button type="button">Cadastre-se</button></a>
+    </form>    
+</body>
+<script>
+    document.getElementById('login-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        
+        const response = await fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, senha })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userId', data.userId);
+            window.location.href = '/cargas';
+        } else {
+            alert(data.error);
+        }
+    });
+</script>
+</html>

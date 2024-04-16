@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style/styles.css">
+    <link rel="stylesheet" href="./dist/output.css">
+    <title>Visualizar Cargas</title>
+</head>
+
+<body>
+
+    <div id="mensagem"></div>
+
+    <h1>Visualizar Cargas</h1>
+    <div id="cargas-container"></div>
+
+    <h1>Buscar Carga</h1>
+    <form id="buscar-carga-form">
+        <label for="parametro1">País:</label><br>
+        <input type="text" id="parametro1" name="parametro1" required><br>
+        <label for="parametro2">Nota de Consignação:</label><br>
+        <input type="text" id="parametro2" name="parametro2" required><br><br>
+        <button type="submit">Buscar</button>
+    </form>
+    <div id="cargas-nova"></div>
+    <input type="button" style="display: block;" id="salvar-carga-button" value="Salvar no Banco"><br><br>
+
+
+</body>
+
+<script>
+    function getToken() {
+        return localStorage.getItem('token');
+    }
+
+    var token = getToken();
+
+    fetch('/pagina-cargas', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            const cargasContainer = document.getElementById('cargas-container');
+            data.forEach(cargas => {
+                Object.keys(cargas).forEach(key => {
+                    cargasContainer.innerHTML += `<p>${key}: ${cargas[key]}</p>`;
+                });
+            });
+        })
+        .catch(error => console.error('Erro ao obter cargas:', error));
+
+    document.getElementById('buscar-carga-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const parametro1 = document.getElementById('parametro1').value;
+        const parametro2 = document.getElementById('parametro2').value;
+
+        fetch('/busca', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ parametro1, parametro2 })
+        })
+            .then(response => response.json())
+            .then(busca => {
+                const cargasNova = document.getElementById('cargas-nova');
+                cargasNova.innerHTML = '';
+
+                cargasNova.innerHTML += "<h2>Dados Atuais</h2>";
+                Object.keys(busca.DadosAtuais).forEach(key => {
+                    cargasNova.innerHTML += `<p>${key}: ${busca.DadosAtuais[key]}</p>`;
+                });
+
+                cargasNova.innerHTML += "<h2>Histórico</h2>";
+                busca.Historico.forEach(item => {
+                    cargasNova.innerHTML += "<p>";
+                    Object.keys(item).forEach(key => {
+                        cargasNova.innerHTML += `${key}: ${item[key]}, `;
+                    });
+                    cargasNova.innerHTML += "</p>";
+                });
+
+                if (busca.salvarNoBanco) {
+                    document.getElementById('salvar-carga-button').style.display = 'block';
+                }
+            })
+            .catch(error => console.error('Erro na nova busca:', error));
+    });
+
+    document.getElementById('salvar-carga-button').addEventListener('click', function () {
+        const parametro1 = document.getElementById('parametro1').value;
+        const parametro2 = document.getElementById('parametro2').value;
+
+        fetch('/busca', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ parametro1, parametro2, salvarNoBanco: true })
+        })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('mensagem').innerText = 'Carga salva com sucesso!';
+                } else {
+                    return response.json(); // Se houver erro, retornar a resposta como JSON
+                }
+            })
+            .then(data => {
+                // Verificar se a resposta contém uma mensagem de erro
+                if (data && data.error) {
+                    document.getElementById('mensagem').innerText = data.error;
+                }
+            })
+            .catch(error => console.error('Erro ao salvar no banco:', error));
+    });
+</script>
+
+</html>

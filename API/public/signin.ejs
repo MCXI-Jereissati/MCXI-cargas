@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./dist/output.css">
+  <link rel="stylesheet" href="./style/styles.css">
+  <title>Cadastro de Usuário</title>
+</head>
+<body>
+  <h1 class="text-5xl">Cadastro de Usuário</h1>
+  <form id="cadastroForm" action="/createUser" method="POST">
+    <label for="nome">Nome:</label><br>
+    <input type="text" id="nome" name="nome" required><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br>
+    <label for="senha">Senha:</label><br>
+    <input type="password" id="senha" name="senha" required><br>
+    <label for="admin">Administrador:</label><br>
+    <input type="checkbox" id="admin" name="admin"><br>
+    <button type="submit">Cadastrar</button>
+    <a href='/'><button type="button">Login</button></a>
+  </form>
+</body>
+<script>
+    document.getElementById('cadastroForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const nome = document.getElementById('nome').value;
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const admin = document.getElementById('admin').value;
+        
+        const response = await fetch('/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nome, email, senha, admin })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+            window.location.href = '/';
+        } else {
+            alert(data.error);
+        }
+    });
+</script>
+</html>
