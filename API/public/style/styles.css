@@ -1,6 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 body {
     margin: 0;
     padding: 0;
     height: 100vh;
-    background-color: #d3d3d3;
+    background-color: #010409;
+    font-family: 'Ubuntu Mono', monospace; 
+}
+
+html {
+    color: #e6edf3;
+}
+
+input {
+    background-color: #161b22;
+}
+
+input[type="text"]::placeholder {
+    color: #7a828c;
 }

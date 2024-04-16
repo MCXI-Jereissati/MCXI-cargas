@@ -25,7 +25,7 @@
         <button type="submit">Buscar</button>
     </form>
     <div id="cargas-nova"></div>
-    <input type="button" style="display: block;" id="salvar-carga-button" value="Salvar no Banco"><br><br>
+    <input class="cursor-pointer" type="button" style="display: none;" id="salvar-carga-button" value="Salvar no Banco"><br><br>
 
 
 </body>
@@ -86,7 +86,7 @@
                     });
                     cargasNova.innerHTML += "</p>";
                 });
-
+                document.getElementById('salvar-carga-button').style.display = 'block';
                 if (busca.salvarNoBanco) {
                     document.getElementById('salvar-carga-button').style.display = 'block';
                 }
@@ -110,11 +110,10 @@
                 if (response.ok) {
                     document.getElementById('mensagem').innerText = 'Carga salva com sucesso!';
                 } else {
-                    return response.json(); // Se houver erro, retornar a resposta como JSON
+                    return response.json(); 
                 }
             })
             .then(data => {
-                // Verificar se a resposta contém uma mensagem de erro
                 if (data && data.error) {
                     document.getElementById('mensagem').innerText = data.error;
                 }
