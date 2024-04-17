@@ -7,18 +7,18 @@
     <link rel="stylesheet" href="./style/styles.css">
     <title>Login</title>
 </head>
-<body class="flex justify-center items-center h-screen">
-    <section class="flex  mx-auto bg-[#0d1117] w-10/12 h-auto border-[#30363d] border-2 rounded-lg">
+<body class="flex justify-center items-center h-screen  lg:overflow-hidden">
+    <section class="flex  mx-auto bg-[#0d1117] w-10/12 lg:w-4/12 h-auto border-[#30363d] border-2 rounded-lg">
         <div class="w-full p-8">
-            <h1 class="text-6xl text-center w-full">Login</h1>
-          <h2 class="opacity-40 w-full text-center text-xl ">Insira suas credênciais</h2>
+            <h1 class="text-6xl lg:text-7xl text-center w-full">Login</h1>
+          <h2 class="opacity-40 w-full text-center lg:text-2xl text-xl ">Insira suas credênciais</h2>
             <form class="my-8" id="login-form">
                 <div class="grid gap-y-7 mb-8">
-                    <input class="w-full px-4 rounded-xl h-[40px]" type="email" id="email" name="email" placeholder="E-mail:">
-                    <input class="w-full px-4 rounded-xl h-[40px]" type="password" id="senha" name="senha" placeholder="Senha:">
+                    <input class="w-full lg:text-xl px-4 rounded-xl h-[40px]" type="email" id="email" name="email" placeholder="E-mail:">
+                    <input class="w-full lg:text-xl px-4 rounded-xl h-[40px]" type="password" id="senha" name="senha" placeholder="Senha:">
                 </div>
                 <div class="w-full text-center">
-                    <button class="bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold" type="submit">Login</button> <br>
+                    <button class="bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl lg:text-3xl font-bold" type="submit">Login</button> <br>
                 </div>
                 <div class="w-full text-center mt-2">                    
                     <p>Não tem conta?<a href='/signin' class="pl-1 text-[#4493f8] hover:underline">Cadastre-se</a></p>
