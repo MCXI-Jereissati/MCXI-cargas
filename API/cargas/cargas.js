@@ -202,7 +202,7 @@ export const enviarEmail = async (destinatario, assunto, corpo) => {
         from: 'redefinirsenha1983@gmail.com',
         to: destinatario,
         subject: assunto,
-        text: corpo
+        html: corpo
     };
 
     try {
@@ -254,14 +254,40 @@ export const updateSaveCargas = async () => {
                             console.log('Dados atualizados com sucesso para', row.numcodigoaereo);
 
                             const destinatario = row.email;
-                            const assunto = 'Atualização de Carga';
+                            const assunto = `Atualização de Carga: ${row.numcodigoaereo}`;
                             const corpo = `
-                                Carga número ${row.numcodigoaereo} teve atualização:
-                                Status: ${state},
-                                Partida: ${departure},
-                                Chegada: ${arrival},
-                                Voo: ${Flight},
-                                Reserva: ${Reservation}.
+                            <html lang="pt-br">
+                            <head>
+                                <meta charset="UTF-8">
+                                <link rel="stylesheet"
+                                    href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+                                <style>
+                                    body {
+                                        font-family: 'Ubuntu Mono', monospace;
+                                    }
+                                </style>
+                            </head>
+                            <body style="margin: 20px; display: grid; justify-content: center;">
+                                <div style="display: flex; align-items: center; height: 100px; margin-bottom: 20px;">
+                                    <p style="rotate: -45deg; font-size: 5rem; margin: 0;">&#x2708;</p>
+                                    <h1 style="color: #333; margin-left: 10px; font-size: 3rem;">Atualização de Carga</h1>
+                                </div>
+                                <div style="margin: 40px;">
+                                    <p style="font-size: 1.5rem;">Carga número <span style="font-weight: bold;">${row.numcodigoaereo}</span> teve
+                                        atualização:
+                                    </p>
+                                    <div style="font-size: 1.25rem;">
+                                        <div style="margin-left: 20px;">
+                                            <p>Status: <span style="font-weight: bold; color: #5cd26f;"> ${state}</span></p>
+                                            <p>Partida: <span style="font-weight: bold;"> ${departure}</span></p>
+                                            <p>Chegada: <span style="font-weight: bold;"> ${arrival}</span></p>
+                                            <p>Voo: <span style="font-weight: bold;"> ${Flight}</span></p>
+                                            <p>Reserva: <span style="font-weight: bold;"> ${Reservation}</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </body>
+                            </html>
                             `;
                             
                             await enviarEmail(destinatario, assunto, corpo);

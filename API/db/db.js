@@ -1,12 +1,16 @@
 import pkg from 'pg';
+import dotenv from 'dotenv';
+
+
+dotenv.config();
 const { Client } = pkg;
 
 export const db = new Client({
-  user: "postgres",
-  host: "localhost",
-  database: "robo",
-  password: "1234",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABAS,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 const createTableUser = `
