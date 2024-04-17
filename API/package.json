@@ -28,6 +28,7 @@
     "pug": "^3.0.2"
   },
   "devDependencies": {
+    "@iconify/tailwind": "^0.1.4",
     "autoprefixer": "^10.4.19",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.38",

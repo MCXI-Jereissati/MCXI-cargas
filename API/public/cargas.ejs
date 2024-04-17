@@ -34,18 +34,10 @@
             <div id="historico"></div>
         </div>
     </section>
-
-    <!-- <div id="cargas-container"> </div> -->
-    <div>
-        <div class="grid grid-cols-2 border rounded px-2 border-[#30363d]">
-            <p>ID Aéreo</p>
-            <p>047-33082770</p>
-        </div>
-    </div>
-    <button id="toggleButton" class="w-full border-[#30363d]">Toggle Div</button>
-    <div id="content" style="display: none;">
-        ola
-    </div>
+    <section class="border-t-2">
+        <h1 class="text-4xl pt-4">Cargas salvas</h1>
+        <div id="cargas-container"> </div>
+    </section>
 </body>
 
 <script>
@@ -66,10 +58,16 @@
             const cargasContainer = document.getElementById('cargas-container');
             data.forEach(cargas => {
                 cargasContainer.innerHTML += `
-                    <div class="flex m-8 border-2">
-                        
-                        <p>${cargas.numcodigoaereo}</p>
-                        <p>${cargas.statusatual}</p>
+                    <div class="border border-[#30363d] hover:bg-[#161b22 my-4 rounded-lg">
+                        <div class="grid grid-cols-3 border-b border-[#30363d] px-4 py-2">
+                            <p>Código Aéreo:</p>
+                            <p>${cargas.numcodigoaereo}</p>
+                            <button id="delete-cargas" class="text-end">apagar</button>
+                        </div>
+                        <div class="grid grid-cols-2 px-4 py-2">
+                            <p>Status</p>
+                            <p class="text-[#5cd26f]">${cargas.statusatual}</p>
+                        </div>
                     </div>
                 `;
             });
@@ -120,14 +118,54 @@
                     }
                 });
 
-                historicoDiv.innerHTML += "<h2>Pesquisas salvas</h2>";
+                historicoDiv.innerHTML += ``;
                 busca.Historico.forEach(item => {
-                    let historicoItemHTML = "<p>";
+                    let historicoItemHTML = `<div class="mb-4">`;
+                    let flightValue;
+
                     Object.keys(item).forEach(key => {
-                        historicoItemHTML += `${key}: ${item[key]}, `;
+                        historicoItemHTML += `<p class="hidden">${key}: ${item[key]}</p>`;
+
+                        if (key === "Flight") {
+                            flightValue = item[key];
+                        }
                     });
-                    historicoItemHTML += "</p>";
+                    historicoItemHTML += `<button class="flex pb-8 toggleButton cursor-text h-[30px] w-full border border-[#30363d] px-4 bg-[#161b22] justify-between">
+                        <p>${flightValue}</p>
+                        <div>
+                            <span id="oi" class="rotate-90 text-3xl align-top mb-8" style="display: block;"> &#10151; </span>
+                            <span id="tchau" class="-rotate-90 text-3xl align-top" style="display: none;"> &#10151; </span>
+                        </div>
+                    </button>`;
+                    historicoItemHTML += `<div class="content-${busca.Historico.indexOf(item)} cursor-text" style="display: none;">`;
+                    Object.keys(item).forEach(key => {
+                        historicoItemHTML += `
+                        <div class="grid grid-cols-2 border border-[#30363d] hover:bg-[#161b22] cursor-text">
+                            <p class="py-2 px-4 cursor-text">${key}</p> 
+                            <p class="py-2 px-4 cursor-text">${item[key]}</p>
+                        </div>`;
+                    });
+                    historicoItemHTML += "</div>";
+                    historicoItemHTML += "</div>";
                     historicoDiv.innerHTML += historicoItemHTML;
+                });
+
+                document.querySelectorAll('.toggleButton').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const content = this.nextElementSibling;
+                        const oiSpan = this.querySelector('#oi');
+                        const tchauSpan = this.querySelector('#tchau');
+
+                        if (content.style.display === 'none') {
+                            content.style.display = 'block';
+                            oiSpan.style.display = 'none';
+                            tchauSpan.style.display = 'block';
+                        } else {
+                            content.style.display = 'none';
+                            oiSpan.style.display = 'block';
+                            tchauSpan.style.display = 'none';
+                        }
+                    });
                 });
 
                 document.getElementById('dados-atuais').style.display = 'block';
@@ -170,7 +208,7 @@
             .catch(error => console.error('Erro ao salvar no banco:', error));
     });
 
-    document.getElementById('toggleButton').addEventListener('click', function() {
+    document.getElementById('toggleButton').addEventListener('click', function () {
         var div = document.getElementById('content');
         if (div.style.display === 'none') {
             div.style.display = 'block';
