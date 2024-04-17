@@ -11,21 +11,23 @@
 
 <body>
     <div style="display: none" id="mensagem"
-        class="fixed justify-between items-center text-sm m-0 bg-[#010409] w-full h-[60px] top-0 border-b-2 border-[#30363d] transition-opacity duration-1000 ease-in-out opacity-0">
-        <span id="mensagem-texto" class=" content-center ml-4"></span>
-        <div class="bg-[red] mr-4 w-7 h-7 flex justify-center items-center rounded-lg">
+        class="fixed grid-cols-12 items-center text-sm m-0 bg-[#010409] w-full h-[60px] top-0 border-b-2 border-[#30363d]">
+        <div class="lg:col-span-1"></div>
+        <span id="mensagem-texto" class="content-center mr-6 lg:text-xl col-span-3 lg:col-span-10 text-center"></span>
+        <div class="bg-[red] mr-4 w-7 h-7 flex justify-center items-center rounded-lg lg:col-span-1">
             <button id="excluir-mensagem" class="text-white text-xl rotate-45">&#10010;</button>
         </div>
     </div>
     <section class="m-4 lg:grid lg:grid-cols-2">
-        <div class="p-4 bg-[#0d1117] lg:bg-transparent lg:border-transparent lg:justify-center border-[#30363d] border-2 rounded-lg mb-8 lg:w-12/12">
+        <div
+            class="p-4 bg-[#0d1117] lg:bg-transparent lg:border-transparent lg:justify-center border-[#30363d] border-2 rounded-lg mb-8 lg:w-12/12">
             <h1 class="w-full text-center text-3xl pb-8">Pesquisar Carga</h1>
             <form id="buscar-carga-form">
                 <div class="grid lg:grid-cols-2 gap-y-5">
-                    <input class="w-full lg:w-8/12 lg:col-span-2 lg:mx-auto px-4 rounded-xl h-[40px]" type="text" id="parametro1" name="parametro1"
-                        placeholder="Código da companhia:" required>
-                    <input class="w-full lg:w-8/12 lg:col-span-2 lg:mx-auto px-4 rounded-xl h-[40px]" type="text" id="parametro2" name="parametro2"
-                        placeholder="ID aéreo:" required>
+                    <input class="w-full lg:w-8/12 lg:col-span-2 lg:mx-auto px-4 rounded-xl h-[40px]" type="text"
+                        id="parametro1" name="parametro1" placeholder="Código da companhia:" required>
+                    <input class="w-full lg:w-8/12 lg:col-span-2 lg:mx-auto px-4 rounded-xl h-[40px]" type="text"
+                        id="parametro2" name="parametro2" placeholder="ID aéreo:" required>
                 </div>
                 <div id="busca-salva" style="display: block;" class="pt-8 w-full text-center">
                     <button class="bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold"
@@ -36,7 +38,8 @@
             </form>
         </div>
         <div id="cargas-nova">
-            <div id="dados-atuais" class="p-4 lg:border-transparent border-[#30363d] border-2 rounded-lg mb-8" style="display: none;"></div>
+            <div id="dados-atuais" class="p-4 lg:border-transparent border-[#30363d] border-2 rounded-lg mb-8"
+                style="display: none;"></div>
         </div>
         <div id="cargas-nova" class="lg:col-span-2 lg:gap-x-4">
             <div id="historico" class="lg:grid lg:grid-cols-2 lg:gap-x-4"></div>
@@ -54,7 +57,6 @@
     }
 
     var token = getToken();
-
     fetch('/pagina-cargas', {
         method: 'GET',
         headers: {
@@ -64,16 +66,50 @@
         .then(response => response.json())
         .then(data => {
             const cargasContainer = document.getElementById('cargas-container');
-            data.forEach(cargas => {
-                const deleteButton = document.createElement('button');
-                deleteButton.classList.add('delete-button');
-                deleteButton.innerHTML = '&#128465;';
-                deleteButton.classList.add('text-end');
+            data.forEach(carga => {
+                cargasContainer.innerHTML += `
+            <div class="card border border-[#30363d] hover:bg-[#161b22 my-4 rounded-lg lg:gap-x-3">
+                <div class="grid grid-cols-3 justify-items-end border-b border-[#30363d] px-4 py-2">
+                    <p>Código Aéreo:</p>
+                    <p>${carga.numcodigoaereo}</p>
+                    <button class="delete-button text-end" data-carga-id="${carga.numcodigoaereo}">&#128465;</button>
+                </div>
+                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                    <p class="lg:text-xl">Status:</p>
+                    <p class="text-[#5cd26f] font-bold col-span-2 lg:text-xl">${carga.statusatual}</p>
+                </div>
+                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                    <p class="lg:text-xl">Origem:</p>
+                    <p class="font-bold col-span-2 lg:text-xl">${carga.partida}</p>
+                </div>
+                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                    <p class="lg:text-xl">Destino:</p>
+                    <p class="font-bold col-span-2 lg:text-xl">${carga.chegada}</p>
+                </div>
+                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                    <p class="lg:text-xl">Voo:</p>
+                    <p class="font-bold col-span-2 lg:text-xl">${carga.flight}</p>
+                </div>
+                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                    <p class="lg:text-xl">Peso:</p>
+                    <p class="font-bold col-span-2 lg:text-xl">${carga.weight}</p>
+                </div>
+                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                    <p class="lg:text-xl">Resarva:</p>
+                    <p class="font-bold col-span-2 lg:text-xl">${carga.reservation}</p>
+                </div>
+            </div>
+        `;
+            });
+
+            const deleteButtons = document.querySelectorAll('.delete-button');
+            deleteButtons.forEach(deleteButton => {
                 deleteButton.addEventListener('click', () => {
+                    const cargaId = deleteButton.dataset.cargaId;
                     const confirmDelete = confirm('Tem certeza que deseja excluir esta carga?');
 
                     if (confirmDelete) {
-                        fetch(`/pagina-cargas/${cargas.numcodigoaereo}`, {
+                        fetch(`/pagina-cargas/${cargaId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': 'Bearer ' + token
@@ -81,7 +117,12 @@
                         })
                             .then(response => {
                                 if (response.ok) {
-                                    deleteButton.parentElement.parentElement.remove();
+                                    const cardElement = deleteButton.closest('.card');
+                                    if (cardElement) {
+                                        cardElement.remove();
+                                    } else {
+                                        console.error('Elemento "card" não encontrado.');
+                                    }
                                 } else {
                                     console.error('Erro ao excluir carga:', response.statusText);
                                 }
@@ -91,46 +132,10 @@
                             });
                     }
                 });
-
-                cargasContainer.innerHTML += `
-                    <div class="border border-[#30363d] hover:bg-[#161b22 my-4 rounded-lg lg:gap-x-3">
-                        <div class="grid grid-cols-3 justify-items-end border-b border-[#30363d] px-4 py-2">
-                            <p>Código Aéreo:</p>
-                            <p>${cargas.numcodigoaereo}</p>
-                        </div>
-                        <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                            <p class="lg:text-xl">Status:</p>
-                            <p class="text-[#5cd26f] font-bold col-span-2 lg:text-xl">${cargas.statusatual}</p>
-                        </div>
-                        <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                            <p class="lg:text-xl">Origem:</p>
-                            <p class="font-bold col-span-2 lg:text-xl">${cargas.partida}</p>
-                        </div>
-                        <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                            <p class="lg:text-xl">Destino:</p>
-                            <p class="font-bold col-span-2 lg:text-xl">${cargas.chegada}</p>
-                        </div>
-                        <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                            <p class="lg:text-xl">Voo:</p>
-                            <p class="font-bold col-span-2 lg:text-xl">${cargas.flight}</p>
-                        </div>
-                        <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                            <p class="lg:text-xl">Peso:</p>
-                            <p class="font-bold col-span-2 lg:text-xl">${cargas.weight}</p>
-                        </div>
-                        <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                            <p class="lg:text-xl">Resarva:</p>
-                            <p class="font-bold col-span-2 lg:text-xl">${cargas.reservation}</p>
-                        </div>
-                    </div>
-                `;
-
-                const cargaDiv = cargasContainer.lastElementChild;
-                const buttonContainer = cargaDiv.querySelector('.grid-cols-3');
-                buttonContainer.appendChild(deleteButton);
             });
         })
         .catch(error => console.error('Erro ao obter cargas:', error));
+
 
     document.getElementById('buscar-carga-form').addEventListener('submit', function (event) {
         event.preventDefault();
@@ -242,10 +247,92 @@
     document.getElementById('excluir-mensagem').addEventListener('click', function () {
         document.getElementById('mensagem-texto').innerText = '';
         document.getElementById('mensagem').style.display = 'none';
-        document.getElementById('mensagem').classList.remove('opacity-100'); 
-        document.getElementById('mensagem').classList.add('opacity-0'); 
+        document.getElementById('mensagem').classList.remove('opacity-100');
+        document.getElementById('mensagem').classList.add('opacity-0');
     });
 
+    function atualizarCargasSalvas() {
+        fetch('/pagina-cargas', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const cargasContainer = document.getElementById('cargas-container');
+                cargasContainer.innerHTML = '';
+                data.forEach(carga => {
+                    cargasContainer.innerHTML += `
+                <div class="card border border-[#30363d] hover:bg-[#161b22 my-4 rounded-lg lg:gap-x-3">
+                    <div class="grid grid-cols-3 justify-items-end border-b border-[#30363d] px-4 py-2">
+                        <p>Código Aéreo:</p>
+                        <p>${carga.numcodigoaereo}</p>
+                        <button class="delete-button text-end" data-carga-id="${carga.numcodigoaereo}">&#128465;</button>
+                    </div>
+                    <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                        <p class="lg:text-xl">Status:</p>
+                        <p class="text-[#5cd26f] font-bold col-span-2 lg:text-xl">${carga.statusatual}</p>
+                    </div>
+                    <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                        <p class="lg:text-xl">Origem:</p>
+                        <p class="font-bold col-span-2 lg:text-xl">${carga.partida}</p>
+                    </div>
+                    <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                        <p class="lg:text-xl">Destino:</p>
+                        <p class="font-bold col-span-2 lg:text-xl">${carga.chegada}</p>
+                    </div>
+                    <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                        <p class="lg:text-xl">Voo:</p>
+                        <p class="font-bold col-span-2 lg:text-xl">${carga.flight}</p>
+                    </div>
+                    <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                        <p class="lg:text-xl">Peso:</p>
+                        <p class="font-bold col-span-2 lg:text-xl">${carga.weight}</p>
+                    </div>
+                    <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
+                        <p class="lg:text-xl">Reserva:</p>
+                        <p class="font-bold col-span-2 lg:text-xl">${carga.reservation}</p>
+                    </div>
+                </div>
+            `;
+                });
+
+                // Adicionar eventos de clique aos botões de exclusão
+                const deleteButtons = document.querySelectorAll('.delete-button');
+                deleteButtons.forEach(deleteButton => {
+                    deleteButton.addEventListener('click', () => {
+                        const cargaId = deleteButton.dataset.cargaId;
+                        const confirmDelete = confirm('Tem certeza que deseja excluir esta carga?');
+
+                        if (confirmDelete) {
+                            fetch(`/pagina-cargas/${cargaId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': 'Bearer ' + token
+                                }
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        const cardElement = deleteButton.closest('.card');
+                                        if (cardElement) {
+                                            cardElement.remove();
+                                        } else {
+                                            console.error('Elemento "card" não encontrado.');
+                                        }
+                                    } else {
+                                        console.error('Erro ao excluir carga:', response.statusText);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Erro ao excluir carga:', error);
+                                });
+                        }
+                    });
+                });
+            })
+            .catch(error => console.error('Erro ao obter cargas:', error));
+    }
     document.getElementById('salvar-carga-button').addEventListener('click', function () {
         const parametro1 = document.getElementById('parametro1').value;
         const parametro2 = document.getElementById('parametro2').value;
@@ -260,34 +347,49 @@
         })
             .then(response => {
                 if (response.ok) {
-                    document.getElementById('mensagem-texto').innerText = 'Carga salva com sucesso!';
-                    document.getElementById('mensagem').style.display = 'flex';
-                    document.getElementById('mensagem').classList.remove('opacity-0'); 
-                    document.getElementById('mensagem').classList.add('opacity-100'); 
-                    setTimeout(() => {
-                        document.getElementById('mensagem-texto').innerText = '';
-                        document.getElementById('mensagem').classList.remove('opacity-100'); 
-                        document.getElementById('mensagem').classList.add('opacity-0');
-                    }, 10000);
-                } else {
                     return response.json();
+                } else {
+                    throw new Error('Erro ao salvar carga');
                 }
             })
             .then(data => {
-                if (data && data.error) {
-                    document.getElementById('mensagem-texto').innerText = data.error;
-                    document.getElementById('mensagem').style.display = 'flex';
-                    document.getElementById('mensagem').classList.remove('opacity-0'); 
-                    document.getElementById('mensagem').classList.add('opacity-100'); 
-                    setTimeout(() => {
-                        document.getElementById('mensagem-texto').innerText = '';
-                        document.getElementById('mensagem').classList.remove('opacity-100');
-                        document.getElementById('mensagem').classList.add('opacity-0');
-                    }, 10000);
-                }
+                atualizarCargasSalvas();
+
+                document.getElementById('parametro1').value = '';
+                document.getElementById('parametro2').value = '';
+
+                // Limpar formatação anterior
+                document.getElementById('mensagem-texto').classList.remove('green-text', 'red-text');
+
+                // Definir nova mensagem e formatação
+                document.getElementById('mensagem-texto').innerText = 'Carga salva com sucesso!';
+                document.getElementById('mensagem-texto').classList.add('green-text');
+                document.getElementById('mensagem').style.display = 'grid';
+                document.getElementById('mensagem').classList.remove('opacity-0');
+                document.getElementById('mensagem').classList.add('opacity-100');
+                setTimeout(() => {
+                    document.getElementById('mensagem-texto').innerText = '';
+                    document.getElementById('mensagem').classList.remove('opacity-100');
+                    document.getElementById('mensagem').classList.add('opacity-0');
+                }, 10000);
             })
-            .catch(error => console.error('Erro ao salvar no banco:', error));
+            .catch(error => {
+                console.error('Erro ao salvar carga:', error);
+                document.getElementById('mensagem-texto').classList.remove('green-text', 'red-text');
+
+                document.getElementById('mensagem-texto').innerText = 'Os dados já foram salvos anteriormente';
+                document.getElementById('mensagem-texto').classList.add('red-text');
+                document.getElementById('mensagem').style.display = 'grid';
+                document.getElementById('mensagem').classList.remove('opacity-0');
+                document.getElementById('mensagem').classList.add('opacity-100');
+                setTimeout(() => {
+                    document.getElementById('mensagem-texto').innerText = '';
+                    document.getElementById('mensagem').classList.remove('opacity-100');
+                    document.getElementById('mensagem').classList.add('opacity-0');
+                }, 10000);
+            });
     });
+
 
     document.getElementById('toggleButton').addEventListener('click', function () {
         var div = document.getElementById('content');

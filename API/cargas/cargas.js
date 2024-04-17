@@ -129,9 +129,9 @@ export const salvarCargas = async (userId, countryCode, consignmentNote, data) =
 
         const checkQuery = `
             SELECT * FROM cargas
-            WHERE numCodigoAereo = $1
+            WHERE numCodigoAereo = $1 AND user_id = $2
         `;
-        const checkResult = await db.query(checkQuery, [codigo]);
+        const checkResult = await db.query(checkQuery, [codigo, userId]);
 
         if (checkResult.rows.length > 0) {
             throw new Error('Os dados já foram salvos anteriormente');
@@ -269,7 +269,7 @@ export const updateSaveCargas = async () => {
                             </head>
                             <body style="margin: 20px; display: grid; justify-content: center;">
                                 <div style="display: flex; align-items: center; height: 100px; margin-bottom: 20px;">
-                                    <p style="rotate: -45deg; font-size: 5rem; margin: 0;">&#x2708;</p>
+                                    <p style="rotate: -45deg; font-size: 5rem; margin: 0;">✈️</p>
                                     <h1 style="color: #333; margin-left: 10px; font-size: 3rem;">Atualização de Carga</h1>
                                 </div>
                                 <div style="margin: 40px;">
