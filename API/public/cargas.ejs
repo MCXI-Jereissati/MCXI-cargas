@@ -9,9 +9,15 @@
     <title>Visualizar Cargas</title>
 </head>
 
-<body class="m-4">
-    <div id="mensagem" class="fixed"></div>
-    <section>
+<body>
+    <div style="display: none" id="mensagem"
+        class="fixed justify-between items-center text-sm m-0 bg-[#010409] w-full h-[60px] top-0 border-b-2 border-[#30363d]">
+        <span id="mensagem-texto" class=" content-center ml-4"></span>
+        <div class="bg-[red] mr-4 w-7 h-7 flex justify-center items-center rounded-lg">
+            <button id="excluir-mensagem" class="text-white text-2xl rotate-45">&#10010;</button>
+        </div>
+    </div>
+    <section class="m-4">
         <div class="p-4 bg-[#0d1117] border-[#30363d] border-2 rounded-lg mb-8">
             <h1 class="w-full text-center text-3xl pb-8">Pesquisar Carga</h1>
             <form id="buscar-carga-form">
@@ -34,7 +40,7 @@
             <div id="historico"></div>
         </div>
     </section>
-    <section class="border-t-2">
+    <section class="border-t-2 m-4">
         <h1 class="text-4xl pt-4">Cargas salvas</h1>
         <div id="cargas-container"> </div>
     </section>
@@ -62,10 +68,8 @@
                 deleteButton.innerHTML = '&#128465;';
                 deleteButton.classList.add('text-end');
                 deleteButton.addEventListener('click', () => {
-                    // Exibe uma mensagem de confirmação antes de excluir a carga
                     const confirmDelete = confirm('Tem certeza que deseja excluir esta carga?');
 
-                    // Se o usuário confirmar, proceder com a exclusão
                     if (confirmDelete) {
                         fetch(`/pagina-cargas/${cargas.numcodigoaereo}`, {
                             method: 'DELETE',
@@ -213,6 +217,11 @@
             .catch(error => console.error('Erro na nova busca:', error));
     });
 
+    document.getElementById('excluir-mensagem').addEventListener('click', function () {
+        document.getElementById('mensagem-texto').innerText = '';
+        document.getElementById('mensagem').style.display = 'none';
+    });
+
     document.getElementById('salvar-carga-button').addEventListener('click', function () {
         const parametro1 = document.getElementById('parametro1').value;
         const parametro2 = document.getElementById('parametro2').value;
@@ -227,9 +236,11 @@
         })
             .then(response => {
                 if (response.ok) {
-                    document.getElementById('mensagem').innerText = 'Carga salva com sucesso!';
+                    document.getElementById('mensagem-texto').innerText = 'Carga salva com sucesso!';
+                    document.getElementById('mensagem').style.display = 'flex';
                     setTimeout(() => {
-                        document.getElementById('mensagem').innerText = '';
+                        document.getElementById('mensagem-texto').innerText = '';
+                        document.getElementById('mensagem').style.display = 'none';
                     }, 10000);
                 } else {
                     return response.json();
@@ -237,10 +248,13 @@
             })
             .then(data => {
                 if (data && data.error) {
-                    document.getElementById('mensagem').innerText = data.error;
+                    document.getElementById('mensagem-texto').innerText = data.error;
+                    document.getElementById('mensagem').style.display = 'flex';
                     setTimeout(() => {
-                        document.getElementById('mensagem').innerText = '';
+                        document.getElementById('mensagem-texto').innerText = '';
+                        document.getElementById('mensagem').style.display = 'none';
                     }, 10000);
+
                 }
             })
             .catch(error => console.error('Erro ao salvar no banco:', error));
