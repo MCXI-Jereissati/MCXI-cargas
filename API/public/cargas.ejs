@@ -9,25 +9,43 @@
     <title>Visualizar Cargas</title>
 </head>
 
-<body>
-
+<body class="m-4">
     <div id="mensagem"></div>
+    <section>
+        <div class="p-4 bg-[#0d1117] border-[#30363d] border-2 rounded-lg mb-8">
+            <h1 class="w-full text-center text-3xl pb-8">Pesquisar Carga</h1>
+            <form id="buscar-carga-form">
+                <div class="grid gap-y-5">
+                    <input class="w-full px-4 rounded-xl h-[40px]" type="text" id="parametro1" name="parametro1"
+                        placeholder="Código da companhia:" required>
+                    <input class="w-full px-4 rounded-xl h-[40px]" type="text" id="parametro2" name="parametro2"
+                        placeholder="ID aéreo:" required>
+                </div>
+                <div id="busca-salva" style="display: block;" class="pt-8 w-full text-center">
+                    <button class="bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold"
+                        type="submit">Buscar</button>
+                    <input class="cursor-pointer bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold"
+                        type="button" style="display: none;" id="salvar-carga-button" value="Salvar">
+                </div>
+            </form>
+        </div>
+        <div id="cargas-nova">
+            <div id="dados-atuais" class="p-4 border-[#30363d] border-2 rounded-lg mb-8" style="display: none;"></div>
+            <div id="historico"></div>
+        </div>
+    </section>
 
-    <h1>Visualizar Cargas</h1>
-    <div id="cargas-container"></div>
-
-    <h1>Buscar Carga</h1>
-    <form id="buscar-carga-form">
-        <label for="parametro1">País:</label><br>
-        <input type="text" id="parametro1" name="parametro1" required><br>
-        <label for="parametro2">Nota de Consignação:</label><br>
-        <input type="text" id="parametro2" name="parametro2" required><br><br>
-        <button type="submit">Buscar</button>
-    </form>
-    <div id="cargas-nova"></div>
-    <input class="cursor-pointer" type="button" style="display: none;" id="salvar-carga-button" value="Salvar no Banco"><br><br>
-
-
+    <!-- <div id="cargas-container"> </div> -->
+    <div>
+        <div class="grid grid-cols-2 border rounded px-2 border-[#30363d]">
+            <p>ID Aéreo</p>
+            <p>047-33082770</p>
+        </div>
+    </div>
+    <button id="toggleButton" class="w-full border-[#30363d]">Toggle Div</button>
+    <div id="content" style="display: none;">
+        ola
+    </div>
 </body>
 
 <script>
@@ -47,9 +65,13 @@
         .then(data => {
             const cargasContainer = document.getElementById('cargas-container');
             data.forEach(cargas => {
-                Object.keys(cargas).forEach(key => {
-                    cargasContainer.innerHTML += `<p>${key}: ${cargas[key]}</p>`;
-                });
+                cargasContainer.innerHTML += `
+                    <div class="flex m-8 border-2">
+                        
+                        <p>${cargas.numcodigoaereo}</p>
+                        <p>${cargas.statusatual}</p>
+                    </div>
+                `;
             });
         })
         .catch(error => console.error('Erro ao obter cargas:', error));
@@ -70,23 +92,50 @@
         })
             .then(response => response.json())
             .then(busca => {
-                const cargasNova = document.getElementById('cargas-nova');
-                cargasNova.innerHTML = '';
+                const dadosAtuaisDiv = document.getElementById('dados-atuais');
+                const historicoDiv = document.getElementById('historico');
 
-                cargasNova.innerHTML += "<h2>Dados Atuais</h2>";
+                dadosAtuaisDiv.innerHTML = '';
+                historicoDiv.innerHTML = '';
+
                 Object.keys(busca.DadosAtuais).forEach(key => {
-                    cargasNova.innerHTML += `<p>${key}: ${busca.DadosAtuais[key]}</p>`;
+                    if (key === 'state') {
+                        dadosAtuaisDiv.innerHTML += `
+                            <div class="mb-4">
+                                <h1 class="w-full text-3xl pb-4">Descrição</h1>
+                                <p>Código aéreo: <span class="font-bold">${parametro1}-${parametro2}</span></p>
+                            </div>
+                            <div class="mb-4">
+                                <p>Status:</p>
+                                <p class="font-bold text-[#5cd26f]">${busca.DadosAtuais[key]}</p>
+                            </div>
+                `;
+                    } else {
+                        dadosAtuaisDiv.innerHTML += `
+                        <div class="mb-4">
+                            <p class="capitalize">${key}</p>
+                            <p class="font-bold"> ${busca.DadosAtuais[key]}</p>
+                        </div>
+                `;
+                    }
                 });
 
-                cargasNova.innerHTML += "<h2>Histórico</h2>";
+                historicoDiv.innerHTML += "<h2>Pesquisas salvas</h2>";
                 busca.Historico.forEach(item => {
-                    cargasNova.innerHTML += "<p>";
+                    let historicoItemHTML = "<p>";
                     Object.keys(item).forEach(key => {
-                        cargasNova.innerHTML += `${key}: ${item[key]}, `;
+                        historicoItemHTML += `${key}: ${item[key]}, `;
                     });
-                    cargasNova.innerHTML += "</p>";
+                    historicoItemHTML += "</p>";
+                    historicoDiv.innerHTML += historicoItemHTML;
                 });
+
+                document.getElementById('dados-atuais').style.display = 'block';
                 document.getElementById('salvar-carga-button').style.display = 'block';
+                document.getElementById('busca-salva').style.display = 'flex';
+                document.getElementById('busca-salva').style.justifyContent = 'space-between';
+                document.getElementById('busca-salva').style.paddingLeft = '15%';
+                document.getElementById('busca-salva').style.paddingRight = '15%';
                 if (busca.salvarNoBanco) {
                     document.getElementById('salvar-carga-button').style.display = 'block';
                 }
@@ -110,7 +159,7 @@
                 if (response.ok) {
                     document.getElementById('mensagem').innerText = 'Carga salva com sucesso!';
                 } else {
-                    return response.json(); 
+                    return response.json();
                 }
             })
             .then(data => {
@@ -119,6 +168,15 @@
                 }
             })
             .catch(error => console.error('Erro ao salvar no banco:', error));
+    });
+
+    document.getElementById('toggleButton').addEventListener('click', function() {
+        var div = document.getElementById('content');
+        if (div.style.display === 'none') {
+            div.style.display = 'block';
+        } else {
+            div.style.display = 'none';
+        }
     });
 </script>
 
