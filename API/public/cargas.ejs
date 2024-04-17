@@ -10,7 +10,7 @@
 </head>
 
 <body class="m-4">
-    <div id="mensagem"></div>
+    <div id="mensagem" class="fixed"></div>
     <section>
         <div class="p-4 bg-[#0d1117] border-[#30363d] border-2 rounded-lg mb-8">
             <h1 class="w-full text-center text-3xl pb-8">Pesquisar Carga</h1>
@@ -57,12 +57,40 @@
         .then(data => {
             const cargasContainer = document.getElementById('cargas-container');
             data.forEach(cargas => {
+                const deleteButton = document.createElement('button');
+                deleteButton.classList.add('delete-button');
+                deleteButton.innerHTML = '&#128465;';
+                deleteButton.classList.add('text-end');
+                deleteButton.addEventListener('click', () => {
+                    // Exibe uma mensagem de confirmação antes de excluir a carga
+                    const confirmDelete = confirm('Tem certeza que deseja excluir esta carga?');
+
+                    // Se o usuário confirmar, proceder com a exclusão
+                    if (confirmDelete) {
+                        fetch(`/pagina-cargas/${cargas.numcodigoaereo}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': 'Bearer ' + token
+                            }
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    deleteButton.parentElement.parentElement.remove();
+                                } else {
+                                    console.error('Erro ao excluir carga:', response.statusText);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro ao excluir carga:', error);
+                            });
+                    }
+                });
+
                 cargasContainer.innerHTML += `
                     <div class="border border-[#30363d] hover:bg-[#161b22 my-4 rounded-lg">
-                        <div class="grid grid-cols-3 border-b border-[#30363d] px-4 py-2">
+                        <div class="grid grid-cols-3 justify-items-end border-b border-[#30363d] px-4 py-2">
                             <p>Código Aéreo:</p>
                             <p>${cargas.numcodigoaereo}</p>
-                            <button id="delete-cargas" class="text-end">apagar</button>
                         </div>
                         <div class="grid grid-cols-2 px-4 py-2">
                             <p>Status</p>
@@ -70,6 +98,10 @@
                         </div>
                     </div>
                 `;
+
+                const cargaDiv = cargasContainer.lastElementChild;
+                const buttonContainer = cargaDiv.querySelector('.grid-cols-3');
+                buttonContainer.appendChild(deleteButton);
             });
         })
         .catch(error => console.error('Erro ao obter cargas:', error));
@@ -196,6 +228,9 @@
             .then(response => {
                 if (response.ok) {
                     document.getElementById('mensagem').innerText = 'Carga salva com sucesso!';
+                    setTimeout(() => {
+                        document.getElementById('mensagem').innerText = '';
+                    }, 10000);
                 } else {
                     return response.json();
                 }
@@ -203,6 +238,9 @@
             .then(data => {
                 if (data && data.error) {
                     document.getElementById('mensagem').innerText = data.error;
+                    setTimeout(() => {
+                        document.getElementById('mensagem').innerText = '';
+                    }, 10000);
                 }
             })
             .catch(error => console.error('Erro ao salvar no banco:', error));

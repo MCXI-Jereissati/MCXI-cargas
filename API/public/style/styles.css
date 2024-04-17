@@ -1,12 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 body {
-    margin: 0;
+    margin-bottom: 5%;
     padding: 0;
     height: 100vh;
     background-color: #010409;
     font-family: 'Ubuntu Mono', monospace; 
 }
+
+.delete-button {
+    background-color: #ff0000;
+    border-radius: 10px; 
+    padding-top: 2px; 
+    padding-bottom: 2px; 
+    right: 0;
+    width: 35px;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    border: none;
+    font-size: 1.5rem;
+    color: white; 
+    cursor: pointer; 
+}
+
+.delete-button:hover {
+    background-color: #cc0000;
+}
+
 
 html {
     color: #e6edf3;
