@@ -355,18 +355,18 @@
             .then(data => {
                 atualizarCargasSalvas();
 
-                document.getElementById('parametro1').value = '';
                 document.getElementById('parametro2').value = '';
 
-                // Limpar formatação anterior
-                document.getElementById('mensagem-texto').classList.remove('green-text', 'red-text');
+                document.getElementById('dados-atuais').style.display = 'block';
+                document.getElementById('salvar-carga-button').style.display = 'none';
 
-                // Definir nova mensagem e formatação
+                document.getElementById('mensagem-texto').classList.remove('green-text', 'red-text');
                 document.getElementById('mensagem-texto').innerText = 'Carga salva com sucesso!';
                 document.getElementById('mensagem-texto').classList.add('green-text');
                 document.getElementById('mensagem').style.display = 'grid';
                 document.getElementById('mensagem').classList.remove('opacity-0');
                 document.getElementById('mensagem').classList.add('opacity-100');
+
                 setTimeout(() => {
                     document.getElementById('mensagem-texto').innerText = '';
                     document.getElementById('mensagem').classList.remove('opacity-100');
