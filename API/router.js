@@ -1,7 +1,8 @@
 import express from "express";
 import { authenticateToken } from "./middleware/authenticateToken.js";
-import { login, createUser } from "./user/login.js";
+import { login, createUser, logout } from "./user/login.js";
 import { buscarCargas, getAllCargas, getCargasById, deleteCargasById } from "./cargas/cargas.js";
+import { buscarCotacao } from "./cargas/cotacao.js";
 
 const router = express.Router();
 
@@ -66,5 +67,20 @@ router.delete("/pagina-cargas/:numCodigoAereo", authenticateToken, async (req, r
       res.status(500).json({ error: error.message });
     }
 });
+
+router.post("/busca-cotacao", authenticateToken, async (req, res) => {
+  try {
+      const cotacaoData = await buscarCotacao(req);
+      res.status(200).json(cotacaoData);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/logout", (req, res) => {
+  logout();
+  res.redirect("/");
+});
+
 
 export default router;

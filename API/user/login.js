@@ -61,3 +61,9 @@ export const login = async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };
+
+export const logout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userId');
+  window.location.href = '/';
+};

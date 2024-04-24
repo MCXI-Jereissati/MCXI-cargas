@@ -38,12 +38,24 @@ const createTableCargas = `
   );
 `;
 
+const createTableCotacao = `
+  CREATE TABLE IF NOT EXISTS cotacao (
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    dataHoraCotacao VARCHAR(100) NOT NULL,
+    cotacaoCompra VARCHAR(100) NOT NULL,
+    cotacaoVenda VARCHAR(100) NOT NULL
+  );
+`;
+
 db.connect()
   .then(() => {
     console.log('Conectado ao PostgreSQL.');
     return Promise.all([
       db.query(createTableUser),
-      db.query(createTableCargas)
+      db.query(createTableCargas),
+      db.query(createTableCotacao)
     ]);
   })
   .then(() => console.log('Tabelas criadas com sucesso.'))
