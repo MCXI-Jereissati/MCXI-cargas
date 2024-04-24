@@ -2,7 +2,7 @@ import express from "express";
 import { authenticateToken } from "./middleware/authenticateToken.js";
 import { login, createUser, logout } from "./user/login.js";
 import { buscarCargas, getAllCargas, getCargasById, deleteCargasById } from "./cargas/cargas.js";
-import { buscarCotacao } from "./cargas/cotacao.js";
+import { buscarCotacao} from "./cargas/cotacao.js";
 
 const router = express.Router();
 

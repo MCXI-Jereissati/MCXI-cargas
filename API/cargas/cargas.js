@@ -269,7 +269,7 @@ export const updateSaveCargas = async () => {
                             </head>
                             <body style="margin: 20px; display: grid; justify-content: center;">
                                 <div style="display: flex; align-items: center; height: 100px; margin-bottom: 20px;">
-                                    <p style="rotate: -45deg; font-size: 5rem; margin: 0;">✈️</p>
+                                    <p style="font-size: 5rem; margin: 0; padding-top: 0; @media only screen and (max-width: 600px) { padding-top: 35px; }">✈️</p>
                                     <h1 style="color: #333; margin-left: 10px; font-size: 3rem;">Atualização de Carga</h1>
                                 </div>
                                 <div style="margin: 40px;">

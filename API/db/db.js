@@ -45,7 +45,8 @@ const createTableCotacao = `
     nome VARCHAR(100) NOT NULL,
     dataHoraCotacao VARCHAR(100) NOT NULL,
     cotacaoCompra VARCHAR(100) NOT NULL,
-    cotacaoVenda VARCHAR(100) NOT NULL
+    cotacaoVenda VARCHAR(100) NOT NULL,
+    enviarEmail BOOLEAN NOT NULL
   );
 `;
 

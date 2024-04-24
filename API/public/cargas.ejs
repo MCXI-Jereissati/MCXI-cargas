@@ -10,9 +10,13 @@
 </head>
 
 <body>
-    <div>
+    <div class="lg:block hidden fixed right-8 bg-[red] w-14 text-center rounded-lg text-xl font-bold">
         <button onclick="logout()">Sair</button>
     </div>
+    <div class="lg:hidden block w-full text-xl text-end font-bold">
+        <button class="w-14 bg-[red] rounded-lg text-center mt-3 mr-3" onclick="logout()">Sair</button>
+    </div>
+    <div id="cotacao"></div>
     <div style="display: none" id="mensagem"
         class="fixed grid-cols-12 items-center text-sm m-0 bg-[#010409] w-full h-[60px] top-0 border-b-2 border-[#30363d]">
         <div class="col-span-1"></div>
@@ -48,6 +52,7 @@
             <div id="historico" class="lg:grid lg:grid-cols-2 lg:gap-x-4"></div>
             <input class="cursor-pointer bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold" type="button"
                 id="salvar-cotacao-button" value="Salvar Cotação">
+            <div id="cotacao" class="lg:col-span-2 lg:gap-x-4"></div>
         </div>
     </section>
     <section class="border-t-2 mx-4">
@@ -128,7 +133,7 @@
 
             const deleteButtons = document.querySelectorAll('.delete-button');
             deleteButtons.forEach(deleteButton => {
-                deleteButton.addEventListener('click', () => {
+                deleteButton?.addEventListener('click', () => {
                     const cargaId = deleteButton.dataset.cargaId;
                     const confirmDelete = confirm('Tem certeza que deseja excluir esta carga?');
 
@@ -160,7 +165,7 @@
         })
         .catch(error => console.error('Erro ao obter cargas:', error));
 
-    document.getElementById('buscar-carga-form').addEventListener('submit', function (event) {
+    document.getElementById('buscar-carga-form')?.addEventListener('submit', function (event) {
         event.preventDefault();
 
         const parametro1 = document.getElementById('parametro1').value;
@@ -237,7 +242,7 @@
                 });
 
                 document.querySelectorAll('.toggleButton').forEach(button => {
-                    button.addEventListener('click', function () {
+                    button?.addEventListener('click', function () {
                         const content = this.nextElementSibling;
                         const oiSpan = this.querySelector('#oi');
                         const tchauSpan = this.querySelector('#tchau');
@@ -267,7 +272,7 @@
             .catch(error => console.error('Erro na nova busca:', error));
     });
 
-    document.getElementById('excluir-mensagem').addEventListener('click', function () {
+    document.getElementById('excluir-mensagem')?.addEventListener('click', function () {
         document.getElementById('mensagem-texto').innerText = '';
         document.getElementById('mensagem').style.display = 'none';
         document.getElementById('mensagem').classList.remove('opacity-100');
@@ -323,7 +328,7 @@
 
                 const deleteButtons = document.querySelectorAll('.delete-button');
                 deleteButtons.forEach(deleteButton => {
-                    deleteButton.addEventListener('click', () => {
+                    deleteButton?.addEventListener('click', () => {
                         const cargaId = deleteButton.dataset.cargaId;
                         const confirmDelete = confirm('Tem certeza que deseja excluir esta carga?');
 
@@ -355,7 +360,7 @@
             })
             .catch(error => console.error('Erro ao obter cargas:', error));
     }
-    document.getElementById('salvar-carga-button').addEventListener('click', function () {
+    document.getElementById('salvar-carga-button')?.addEventListener('click', function () {
         const parametro1 = document.getElementById('parametro1').value;
         const parametro2 = document.getElementById('parametro2').value;
 
@@ -412,7 +417,16 @@
             });
     });
 
-    document.getElementById('salvar-cotacao-button').addEventListener('click', function () {
+    document.getElementById('toggleButton')?.addEventListener('click', function () {
+        var div = document.getElementById('content');
+        if (div.style.display === 'none') {
+            div.style.display = 'block';
+        } else {
+            div.style.display = 'none';
+        }
+    });
+
+    document.getElementById('salvar-cotacao-button')?.addEventListener('click', function () {
 
         fetch('/busca-cotacao', {
             method: 'POST',
@@ -431,15 +445,30 @@
             })
     });
 
+    async function buscarCotacoes() {
+        try {
+            const response = await fetch('/busca-cotacao', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ salvarNoBanco: false })
+            });
+            const cotacao = await response.json();
 
-    document.getElementById('toggleButton').addEventListener('click', function () {
-        var div = document.getElementById('content');
-        if (div.style.display === 'none') {
-            div.style.display = 'block';
-        } else {
-            div.style.display = 'none';
+            console.log("aqui" + cotacao)
+
+            if (response.ok) {
+                console.log(cotacao);
+            } else {
+                console.error('Erro ao buscar cotações:', cotacao.error);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar cotações:', error);
         }
-    });
+    }
+
+    buscarCotacoes();
 </script>
 
 </html>
