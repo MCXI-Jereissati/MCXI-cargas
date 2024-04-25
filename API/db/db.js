@@ -43,9 +43,9 @@ const createTableCotacao = `
     user_id INTEGER NOT NULL REFERENCES users(id),
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    dataHoraCotacao VARCHAR(100) NOT NULL,
-    cotacaoCompra VARCHAR(100) NOT NULL,
-    cotacaoVenda VARCHAR(100) NOT NULL,
+    dataHoraCotacao VARCHAR(100),
+    cotacaoCompra VARCHAR(100),
+    cotacaoVenda VARCHAR(100),
     enviarEmail BOOLEAN NOT NULL
   );
 `;

@@ -2,7 +2,7 @@ import express from "express";
 import { authenticateToken } from "./middleware/authenticateToken.js";
 import { login, createUser, logout } from "./user/login.js";
 import { buscarCargas, getAllCargas, getCargasById, deleteCargasById } from "./cargas/cargas.js";
-import { buscarCotacao} from "./cargas/cotacao.js";
+import { buscarCotacao, getAllCotacao } from "./cargas/cotacao.js";
 
 const router = express.Router();
 
@@ -75,6 +75,16 @@ router.post("/busca-cotacao", authenticateToken, async (req, res) => {
   } catch (error) {
       res.status(500).json({ error: error.message });
   }
+});
+
+router.get("/todas-cotacoes", authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    try {
+      const cotacao = await getAllCotacao(userId);
+      res.status(200).json(cotacao);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
 });
 
 router.get("/logout", (req, res) => {

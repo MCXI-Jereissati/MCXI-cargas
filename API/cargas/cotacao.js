@@ -3,9 +3,8 @@ import fetch from 'node-fetch';
 import cron from 'node-cron';
 import nodemailer from 'nodemailer';
 
-
 export const buscarCotacao = async (req) => {
-    const { salvarNoBanco = false } = req.body;
+    const { salvarNoBanco = false, enviarEmail = false } = req.body;
 
     const dataAtual = new Date().toLocaleDateString('en-US', {
         month: '2-digit',
@@ -30,28 +29,28 @@ export const buscarCotacao = async (req) => {
             throw new Error('Erro ao buscar os dados da cotação atual. Status da resposta: ' + responseAtual.status);
         }
 
-        if (!responseAnterior.ok) {
-            throw new Error('Erro ao buscar os dados da cotação anterior. Status da resposta: ' + responseAnterior.status);
-        }
-
         const jsonDataAtual = await responseAtual.json();
         const jsonDataAnterior = await responseAnterior.json();
 
         if (salvarNoBanco) {
-            if (jsonDataAtual.value.length > 0 && jsonDataAnterior.value.length > 0) {
+            if (jsonDataAtual.value.length > 0) {
                 const atual = jsonDataAtual.value[0];
-                const anterior = jsonDataAnterior.value[0];
-                
-                await Promise.all([
-                    salvarCotacao(req.user.userId, 'Atual', atual.dataHoraCotacao, atual.cotacaoCompra, atual.cotacaoVenda),
-                    salvarCotacao(req.user.userId, 'Anterior', anterior.dataHoraCotacao, anterior.cotacaoCompra, anterior.cotacaoVenda)
-                ]);
+                await salvarCotacao(req.user.userId, 'Atual', atual.dataHoraCotacao, atual.cotacaoCompra, atual.cotacaoVenda, enviarEmail);
             } else {
-                throw new Error('Valores das cotações estão vazios ou indefinidos.');
+                await salvarCotacao(req.user.userId, 'Atual', '', '', '', enviarEmail);
+            }
+
+            if (jsonDataAnterior.value.length > 0) {
+                const anterior = jsonDataAnterior.value[0];
+                await salvarCotacao(req.user.userId, 'Anterior', anterior.dataHoraCotacao, anterior.cotacaoCompra, anterior.cotacaoVenda, enviarEmail);
+            } else {
+                throw new Error('Valores das cotações anteriores estão vazios ou indefinidos.');
             }
         }
 
-        return { atual: jsonDataAtual, anterior: jsonDataAnterior };
+        const dadosSalvos = { atual: jsonDataAtual, anterior: jsonDataAnterior };
+
+        return dadosSalvos;
     } catch (error) {
         throw new Error(error.message);
     }
@@ -95,7 +94,7 @@ export const buscarCotacaoAuto = async (req) => {
     }
 };
 
-export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra, cotacaoVenda) => {
+export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra, cotacaoVenda, enviarEmail) => {
     try {
         const checkQuery = `
             SELECT * FROM cotacao
@@ -103,22 +102,21 @@ export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra
         `;
         const checkValues = [userId, nome];
         const checkResult = await db.query(checkQuery, checkValues);
-        const enviarEmail = 'true';
 
         if (checkResult.rows.length > 0) {
             const updateQuery = `
                 UPDATE cotacao 
-                SET dataHoraCotacao = $1, cotacaoCompra = $2, cotacaoVenda = $3
+                SET dataHoraCotacao = $1, cotacaoCompra = $2, cotacaoVenda = $3, enviarEmail = $6
                 WHERE user_id = $4 AND nome = $5;
             `;
-            const updateValues = [dataHoraCotacao, cotacaoCompra, cotacaoVenda, userId, nome];
+            const updateValues = [dataHoraCotacao, cotacaoCompra, cotacaoVenda, userId, nome, enviarEmail];
 
             await db.query(updateQuery, updateValues);
 
             console.log('Os dados da cotação foram atualizados para o usuário', userId);
         } else {
             const insertQuery = `
-                INSERT INTO cotacao (user_id, nome, dataHoraCotacao, cotacaoCompra, cotacaoVenda, enviaremail)
+                INSERT INTO cotacao (user_id, nome, dataHoraCotacao, cotacaoCompra, cotacaoVenda, enviarEmail)
                 VALUES ($1, $2, $3, $4, $5, $6)
             `;
             const values = [userId, nome, dataHoraCotacao, cotacaoCompra, cotacaoVenda, enviarEmail];
@@ -132,32 +130,18 @@ export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra
     }
 };
 
-export const getCotacaoById = async (userId) => {
+export const getAllCotacao = async (userId) => {
     try {
         const query = `
             SELECT * FROM cotacao
             WHERE user_id = $1
         `;
         const result = await db.query(query, [userId]);
-        return result.rows[0];
+        return result.rows;
     } catch (error) {
-        throw new Error('Erro ao buscar cotações por dia: ' + error.message);
+        throw new Error('Erro ao obter cotações salvas: ' + error.message);
     }
 };
-
-export const deleteCotacaoById = async (userId) => {
-    try {
-        const query = `
-            DELETE FROM cotacao
-            WHERE user_id = $1
-        `;
-        const result = await db.query(query, [userId]);
-        return result.rows[0];
-    } catch (error) {
-        throw new Error('Erro ao deletar cotação: ' + error.message);
-    }
-};
-
 
 export const enviarEmail = async (destinatario, assunto, corpo) => {
     const transporter = nodemailer.createTransport({
@@ -186,7 +170,7 @@ export const enviarEmail = async (destinatario, assunto, corpo) => {
 export const updateSaveCotacao = async () => {
     try {
         const selectQuery = `
-            SELECT co.*, u.email FROM cotacao co JOIN users u ON co.user_id = u.id
+            SELECT co.*, u.email FROM cotacao co JOIN users u ON co.user_id = u.id WHERE enviaremail = true
         `;
         
         const { rows } = await db.query(selectQuery);

@@ -16,7 +16,6 @@
     <div class="lg:hidden block w-full text-xl text-end font-bold">
         <button class="w-14 bg-[red] rounded-lg text-center mt-3 mr-3" onclick="logout()">Sair</button>
     </div>
-    <div id="cotacao"></div>
     <div style="display: none" id="mensagem"
         class="fixed grid-cols-12 items-center text-sm m-0 bg-[#010409] w-full h-[60px] top-0 border-b-2 border-[#30363d]">
         <div class="col-span-1"></div>
@@ -50,13 +49,36 @@
         </div>
         <div id="cargas-nova" class="lg:col-span-2 lg:gap-x-4">
             <div id="historico" class="lg:grid lg:grid-cols-2 lg:gap-x-4"></div>
-            <input class="cursor-pointer bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold" type="button"
-                id="salvar-cotacao-button" value="Salvar Cotação">
-            <div id="cotacao" class="lg:col-span-2 lg:gap-x-4"></div>
         </div>
     </section>
+    <div class="lg:hidden">
+        <div class="lg:hidden mx-4 mb-7 px-4 py-2 border-2 rounded-lg">
+            <h1 class="text-center text-xl font-bold">Cotação do Dolár</h1>
+            <div id="cotacaoMob"></div>
+        </div>
+    </div>
     <section class="border-t-2 mx-4">
-        <h1 class="text-4xl pt-4 lg:py-8 lg:pl-12 font-bold">Cargas salvas</h1>
+        <div class="lg:flex lg:mt-4">
+            <div>
+                <h1 class="text-4xl pt-4 lg:pl-12 font-bold">Cargas salvas</h1>
+                <div class="text-xl pt-4 lg:pl-12 font-bold" id="totalcargas"></div>
+            </div>
+            <div class="hidden lg:block text-lg ml-24 px-4 py-2 border-2 rounded-lg">
+                <div>
+                    <h1 class="text-center text-2xl font-bold">Cotacão do Dólar</h1>
+                    <div id="cotacao"></div>
+                </div>
+                <div class="mt-2">
+                    <p class="text-base">Enviar e-mail com atualizações da cotação?</p>
+                    <div class="flex justify-center">
+                        <label class="switch">
+                            <input type="checkbox" id="salvar-cotacao-checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="cargas-container" class="pb-12 lg:grid-cols-3 lg:grid lg:gap-x-3"> </div>
     </section>
 </body>
@@ -294,8 +316,8 @@
                     cargasContainer.innerHTML += `
                 <div class="card border border-[#30363d] hover:bg-[#161b22 my-4 rounded-lg lg:gap-x-3">
                     <div class="grid grid-cols-3 justify-items-end border-b border-[#30363d] px-4 py-2">
-                        <p>Código Aéreo:</p>
-                        <p>${carga.numcodigoaereo}</p>
+                        <p class="lg:text-xl">Código Aéreo:</p>
+                        <p class="font-bold lg:text-xl">${carga.numcodigoaereo}</p>
                         <button class="delete-button text-end" data-carga-id="${carga.numcodigoaereo}">&#128465;</button>
                     </div>
                     <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
@@ -360,6 +382,33 @@
             })
             .catch(error => console.error('Erro ao obter cargas:', error));
     }
+
+    async function totalCargas() {
+        try {
+            const response = await fetch('/pagina-cargas', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            const totalCargas = await response.json();
+
+            if (Array.isArray(totalCargas)) {
+                const numRegistros = totalCargas.length;
+
+                const divTotalCargas = document.getElementById('totalcargas');
+                divTotalCargas.textContent = "Total de cargas (" + numRegistros + ")";
+            } else {
+                console.error("Erro: A resposta não contém um array.");
+            }
+
+        } catch (error) {
+            console.error('Erro ao buscar total das cargas:', error);
+            const divTotalCargas = document.getElementById('totalcargas');
+            divTotalCargas.textContent = "Erro ao buscar total das cargas.";
+        }
+    }
+
     document.getElementById('salvar-carga-button')?.addEventListener('click', function () {
         const parametro1 = document.getElementById('parametro1').value;
         const parametro2 = document.getElementById('parametro2').value;
@@ -426,49 +475,120 @@
         }
     });
 
-    document.getElementById('salvar-cotacao-button')?.addEventListener('click', function () {
-
-        fetch('/busca-cotacao', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({ salvarNoBanco: true })
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Erro ao salvar cotação.');
+    async function buscarTodasCotacoes() {
+        try {
+            const response = await fetch('/todas-cotacoes', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
                 }
-            })
+            });
+            const todasCotacoes = await response.json();
+
+            const checkbox = document.getElementById('salvar-cotacao-checkbox');
+
+            if (todasCotacoes.some(cotacao => cotacao.enviaremail === false)) {
+                checkbox.checked = false;
+            } else {
+                checkbox.checked = true;
+            }
+
+        } catch (error) {
+            console.error('Erro ao buscar todas as cotações:', error);
+        }
+    }
+
+    document.getElementById('salvar-cotacao-checkbox')?.addEventListener('click', async function () {
+        const enviarEmail = this.checked;
+        try {
+            const response = await fetch('/busca-cotacao', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ salvarNoBanco: true, enviarEmail })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar cotação.');
+            }
+
+            console.log('Cotação salva com sucesso.');
+        } catch (error) {
+            console.error(error);
+            this.checked = false;
+        }
     });
 
-    async function buscarCotacoes() {
+    async function cotacaoAtualizada() {
         try {
             const response = await fetch('/busca-cotacao', {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + token
-                },
-                body: JSON.stringify({ salvarNoBanco: false })
+                }
             });
-            const cotacao = await response.json();
+            const Cotacao = await response.json();
 
-            console.log("aqui" + cotacao)
+            const divCotation = document.getElementById('cotacao');
+            const divCotationMob = document.getElementById('cotacaoMob');
 
-            if (response.ok) {
-                console.log(cotacao);
-            } else {
-                console.error('Erro ao buscar cotações:', cotacao.error);
+            function formatarDataHora(dataHora) {
+                const data = new Date(dataHora);
+                const dia = String(data.getDate()).padStart(2, '0');
+                const mes = String(data.getMonth() + 1).padStart(2, '0');
+                const ano = data.getFullYear();
+                const hora = String(data.getHours()).padStart(2, '0');
+                const minutos = String(data.getMinutes()).padStart(2, '0');
+                return `${dia}/${mes}/${ano} ${hora}:${minutos}`;
             }
+
+            if (Cotacao.atual.value.length > 0) {
+                const cotacaoCompra = Cotacao.atual.value[0].cotacaoCompra;
+                const cotacaoVenda = Cotacao.atual.value[0].cotacaoVenda;
+                const dataHoraCotacao = formatarDataHora(Cotacao.atual.value[0].dataHoraCotacao);
+
+                const cotacaoHTML = `
+                        <div>
+                            <p>Valor de compra: <span class="font-bold">${cotacaoCompra}</span></p>
+                            <p>Valor de venda: <span class="font-bold">${cotacaoVenda}</span></p>
+                        </div>
+                        <div>
+                            <p>Data de atualização: <span class="font-bold text-[#5cd26f]">${dataHoraCotacao}</span></p>
+                        </div>
+                    `;
+                divCotation.innerHTML = cotacaoHTML;
+                divCotationMob.innerHTML = cotacaoHTML;
+            } else {
+                const cotacaoCompra = Cotacao.anterior.value[0].cotacaoCompra;
+                const cotacaoVenda = Cotacao.anterior.value[0].cotacaoVenda;
+                const dataHoraCotacao = formatarDataHora(Cotacao.anterior.value[0].dataHoraCotacao);
+
+                const cotacaoHTML = `
+                        <div>
+                            <h1 class="text-center text-2xl font-bold">Cotação do Dólar</h1>
+                            <div>
+                                <p>Valor de compra: <span class="font-bold">${cotacaoCompra}</span></p>
+                                <p>Valor de venda: <span class="font-bold">${cotacaoVenda}</span></p>
+                            </div>
+                            <div>
+                                <p>Data de atualização: <span class="font-bold text-[#5cd26f]">${dataHoraCotacao}</span></p>
+                            </div>
+                        </div>
+                    `;
+                divCotation.innerHTML = cotacaoHTML;
+                divCotationMob.innerHTML = cotacaoHTML;
+            }
+
         } catch (error) {
             console.error('Erro ao buscar cotações:', error);
         }
     }
 
-    buscarCotacoes();
+    totalCargas();
+    cotacaoAtualizada();
+    buscarTodasCotacoes();
 </script>
 
 </html>
