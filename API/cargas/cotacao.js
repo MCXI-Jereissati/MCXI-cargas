@@ -185,11 +185,12 @@ export const updateSaveCotacao = async () => {
                         const cotacaoAtual = atual.value[0];
                         const userId = row.user_id;
                     
-                        await salvarCotacao(userId, 'Atual', cotacaoAtual.dataHoraCotacao, cotacaoAtual.cotacaoCompra, cotacaoAtual.cotacaoVenda);
+                        await salvarCotacao(userId, 'Atual', cotacaoAtual.dataHoraCotacao, cotacaoAtual.cotacaoCompra, cotacaoAtual.cotacaoVenda, 'true');
                     
                         console.log('Cotação atualizada com sucesso para o usuário', userId);
-                    
-                        if (row.enviarEmail) {
+
+                        console.log("aqui: " + row.enviarEmail)
+            
                             const destinatario = row.email;
                             const assunto = 'Atualização de Cotação';
                             const corpo = `
@@ -206,14 +207,13 @@ export const updateSaveCotacao = async () => {
                         
                             await enviarEmail(destinatario, assunto, corpo);
                             atualizacaoEnviada = true;
-                        }
                     }
                     
                     if (anterior.value.length > 0) {
                         const cotacaoAnterior = anterior.value[0];
                         const userId = row.user_id;
                     
-                        await salvarCotacao(userId, 'Anterior', cotacaoAnterior.dataHoraCotacao, cotacaoAnterior.cotacaoCompra, cotacaoAnterior.cotacaoVenda);
+                        await salvarCotacao(userId, 'Anterior', cotacaoAnterior.dataHoraCotacao, cotacaoAnterior.cotacaoCompra, cotacaoAnterior.cotacaoVenda, 'true');
                     }
                 } catch (error) {
                     console.error('Erro ao processar as cotações para o usuário', row.user_id, ':', error.message);
@@ -227,7 +227,7 @@ export const updateSaveCotacao = async () => {
     }
 };
 
-cron.schedule('10 12,16 * * *', async () => {
+cron.schedule('05 12,16 * * *', async () => {
     await updateSaveCotacao();
 }, {
     timezone: 'America/Sao_Paulo'
