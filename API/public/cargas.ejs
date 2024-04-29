@@ -526,7 +526,6 @@
             const Cotacao = await response.json();
 
             const divCotation = document.getElementById('cotacao');
-            const divCotationMob = document.getElementById('cotacaoMob');
 
             function formatarDataHora(dataHora) {
                 const data = new Date(dataHora);
@@ -553,7 +552,6 @@
                         </div>
                     `;
                 divCotation.innerHTML = cotacaoHTML;
-                divCotationMob.innerHTML = cotacaoHTML;
             } else {
                 const cotacaoCompra = Cotacao.anterior.value[0].cotacaoCompra;
                 const cotacaoVenda = Cotacao.anterior.value[0].cotacaoVenda;
@@ -571,7 +569,6 @@
                         </div>
                     `;
                 divCotation.innerHTML = cotacaoHTML;
-                divCotationMob.innerHTML = cotacaoHTML;
             }
 
         } catch (error) {
