@@ -227,7 +227,7 @@ export const updateSaveCotacao = async () => {
     }
 };
 
-cron.schedule('*/10 6-18 * * *', async () => {
+cron.schedule('10 12,16 * * *', async () => {
     await updateSaveCotacao();
 }, {
     timezone: 'America/Sao_Paulo'
