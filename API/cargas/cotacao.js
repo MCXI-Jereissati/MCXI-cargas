@@ -44,7 +44,7 @@ export const buscarCotacao = async (req) => {
                 const anterior = jsonDataAnterior.value[0];
                 await salvarCotacao(req.user.userId, 'Anterior', anterior.dataHoraCotacao, anterior.cotacaoCompra, anterior.cotacaoVenda, enviarEmail);
             } else {
-                throw new Error('Valores das cotações anteriores estão vazios ou indefinidos.');
+                await salvarCotacao(req.user.userId, 'Anterior', '', '', '', enviarEmail);
             }
         }
 
@@ -170,13 +170,12 @@ export const enviarEmail = async (destinatario, assunto, corpo) => {
 export const updateSaveCotacao = async () => {
     try {
         const selectQuery = `
-            SELECT co.*, u.email FROM cotacao co JOIN users u ON co.user_id = u.id WHERE enviaremail = true
+                SELECT co.*, u.email FROM cotacao co JOIN users u ON co.user_id = u.id WHERE co.nome = 'Atual' AND co.enviaremail = true
         `;
         
         const { rows } = await db.query(selectQuery);
         
         if (rows && rows.length > 0) {
-            let atualizacaoEnviada = false;
             for (const row of rows) {
                 try {
                     const { atual, anterior } = await buscarCotacaoAuto();
@@ -186,11 +185,8 @@ export const updateSaveCotacao = async () => {
                         const userId = row.user_id;
                     
                         await salvarCotacao(userId, 'Atual', cotacaoAtual.dataHoraCotacao, cotacaoAtual.cotacaoCompra, cotacaoAtual.cotacaoVenda, 'true');
-                    
-                        console.log('Cotação atualizada com sucesso para o usuário', userId);
-
-                        console.log("aqui: " + row.enviarEmail)
-            
+                     
+                        if (cotacaoAtual.dataHoraCotacao !== row.datahoracotacao) {
                             const destinatario = row.email;
                             const assunto = 'Atualização de Cotação';
                             const corpo = `
@@ -206,7 +202,7 @@ export const updateSaveCotacao = async () => {
                             `;
                         
                             await enviarEmail(destinatario, assunto, corpo);
-                            atualizacaoEnviada = true;
+                        }
                     }
                     
                     if (anterior.value.length > 0) {
@@ -225,9 +221,9 @@ export const updateSaveCotacao = async () => {
     } catch (error) {
         console.error('Erro ao buscar e atualizar os itens salvos:', error.message);
     }
-};
+}
 
-cron.schedule('10 12,16 * * *', async () => {
+cron.schedule('*/5 6-18 * * *', async () => {
     await updateSaveCotacao();
 }, {
     timezone: 'America/Sao_Paulo'
