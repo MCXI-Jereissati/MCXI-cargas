@@ -1,46 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="./dist/output.css" rel="stylesheet">
-  <link rel="stylesheet" href="./style/styles.css">
-  <title>Cadastro de Usuário</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="./dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="./style/styles.css">
+    <title>Cadastro de Usuário</title>
 </head>
-<body class="flex justify-center items-center h-screen">
-  <section class="flex  mx-auto bg-[#0d1117] w-10/12 lg:w-4/12 h-auto border-[#30363d] border-2 rounded-lg">
-      <div class="w-full p-8">
-          <h1 class="text-6xl lg:text-7xl text-center w-full">Cadastro</h1>
-          <h2 class="opacity-40 w-full text-center lg:text-2xl text-xl ">Insira seus dados</h2>
-          <form class="my-8" id="cadastroForm">
-              <div class="grid gap-y-7 mb-8">
-                  <input class="w-full lg:text-xl px-4 rounded-xl h-[40px]" type="email" id="email" name="email" placeholder="E-mail:">
-                  <input class="w-full lg:text-xl px-4 rounded-xl h-[40px]" type="text" id="nome" name="nome" placeholder="Nome:">
-                  <input class="w-full lg:text-xl px-4 rounded-xl h-[40px]" type="password" id="senha" name="senha" placeholder="Senha:">
-                  <div class="flex px-4 rounded-xl h-[40px] content-center flex-wrap justify-between pr-2 bg-[#161b22] text-[#9ca3af]">
-                    <div class="pt-1 lg:text-xl">Administrador: </div>
-                    <input class="h-[30px] lg:h-[40px] mr-3 mt-1" type="checkbox" id="admin" name="admin">
-                  </div>
-              </div>
-              <div class="w-full text-center">
-                  <button class="bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl lg:text-3xl font-bold" type="submit">Cadastre-se</button> <br>
-              </div>
-              <div class="w-full text-center mt-2">                    
-                  <p>Já tem conta?<a href='/' class="pl-1 text-[#4493f8] hover:underline">Login</a></p>
-              </div>
-          </form>  
-      </div>  
-  </section>
+
+<body class="flex justify-center items-center">
+    <section class="flex mx-auto bg-[#ffffff] w-10/12 lg:w-5/12 h-auto border-[#878787] border-[0.5px] rounded-lg my-8">
+        <div class="py-10 px-4 w-full grid gap-y-6">
+            <div class="grid gap-y-5">
+                <div>
+                    <h2 class="text-lg font-light">Bem-vindo!</h2>
+                </div>
+                <div class="grid gap-y-1.5">
+                    <h1 class="text-2xl font-medium">Faça seu cadastro</h1>
+                    <p>Insira seus dados</p>
+                </div>
+            </div>
+            <form class="grid gap-y-7" id="cadastroForm">
+                <div class="grid gap-y-7">
+                    <div class="grid gap-y-2">
+                        <label for="email">Email</label>
+                        <input class="w-full text-sm p-4 rounded-md h-[53px] border-[#282828] border-[0.6px]"
+                            type="email" id="email" name="email" placeholder="Digite seu email" required>
+                    </div>
+                    <div class="grid gap-y-2">
+                        <label for="nome">Nome e sobrenome</label>
+                        <input class="w-full text-sm p-4 rounded-md h-[53px] border-[#282828] border-[0.6px]"
+                            type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+                    </div>
+                    <div class="relative">
+                        <label for="senha">Senha</label>
+                        <input class="w-full text-sm p-4 rounded-md h-[53px] border-[#282828] border-[0.6px]"
+                            type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+                        <button class="absolute right-4 top-2/3 transform -translate-y-2/4" id="togglePassword"
+                            type="button" onclick="togglePasswordVisibility()">
+                            <iconify-icon icon="mdi:eye" id="eye-icon"></iconify-icon>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap content-center">
+                        <input type="checkbox" name="admin" id="admin">
+                        <label for="admin" class="ml-1">Usuário administrador? </label>
+                    </div>
+                </div>
+                <div class="w-full text-center">
+                    <button class="bg-[#000000] w-full text-[#FFFFFF] h-[56px] rounded-md font-medium"
+                        type="submit">Cadastrar</button> <br>
+                </div>
+                <div class="w-full text-center">
+                    <p class="text-[#7D7D7D]">Já tem conta?<a href='/' class="pl-1 text-[#000000] underline">Entrar</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
 </body>
 <script>
-    document.getElementById('cadastroForm').addEventListener('submit', async function(event) {
+    document.getElementById('cadastroForm').addEventListener('submit', async function (event) {
         event.preventDefault();
-        
+
         const nome = document.getElementById('nome').value;
         const email = document.getElementById('email').value;
         const senha = document.getElementById('senha').value;
         const admin = document.getElementById('admin').value;
-        
+
         const response = await fetch('/signin', {
             method: 'POST',
             headers: {
@@ -48,7 +75,7 @@
             },
             body: JSON.stringify({ nome, email, senha, admin })
         });
-        
+
         const data = await response.json();
         if (response.ok) {
             window.location.href = '/';
@@ -56,5 +83,19 @@
             alert(data.error);
         }
     });
+
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById('senha');
+        var eyeIcon = document.getElementById('eye-icon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.setAttribute('icon', 'mdi:eye-off');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.setAttribute('icon', 'mdi:eye');
+        }
+    }
 </script>
+
 </html>

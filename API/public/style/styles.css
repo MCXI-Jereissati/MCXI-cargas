@@ -1,11 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 body {
     margin-bottom: 5%;
     padding: 0;
-    height: 100vh;
-    background-color: #010409;
-    font-family: 'Ubuntu Mono', monospace; 
+    background-color: #ffffff;
+    font-family: "Poppins", sans-serif;
 }
 
 .green-text {
@@ -38,11 +37,11 @@ body {
 
 
 html {
-    color: #e6edf3;
+    color: #000000;
 }
 
 input {
-    background-color: #161b22;
+    background-color: #ffffff;
 }
 
 input:-webkit-autofill,
@@ -54,7 +53,7 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  -webkit-text-fill-color: white !important;
+  -webkit-text-fill-color: #000000 !important;
   -webkit-box-shadow: 0 0 0px 1000px transparent inset;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -62,8 +61,8 @@ select:-webkit-autofill:focus {
 .switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 20px; 
+    width: 51px;
+    height: 28px; 
 }
 
 .switch input {
@@ -86,8 +85,8 @@ select:-webkit-autofill:focus {
 .slider:before {
     position: absolute;
     content: "";
-    height: 16px; 
-    width: 16px; 
+    height: 23px; 
+    width: 23px; 
     left: 2px;
     bottom: 2px;
     background-color: white;
@@ -105,7 +104,8 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-    -webkit-transform: translateX(30px);
-    -ms-transform: translateX(30px);
-    transform: translateX(30px);
+    -webkit-transform: translateX(24px);
+    -ms-transform: translateX(24px);
+    transform: translateX(24px);
 }
+

@@ -4,17 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link rel="stylesheet" href="./style/styles.css">
     <link rel="stylesheet" href="./dist/output.css">
     <title>Visualizar Cargas</title>
 </head>
 
-<body>
-    <div class="lg:block hidden fixed right-8 bg-[red] w-14 text-center rounded-lg text-xl font-bold">
-        <button onclick="logout()">Sair</button>
-    </div>
+<body class="bg-[#F9F9F9]">
     <div class="lg:hidden block w-full text-xl text-end font-bold">
-        <button class="w-14 bg-[red] rounded-lg text-center mt-3 mr-3" onclick="logout()">Sair</button>
+        <button onclick="logout()"
+            class="lg:hidden bg-[#000000] text-[#FFFFFF] text-sm font-medium w-min p-2 mr-4 mt-6 rounded-[10px] h-min">
+            <div class="flex">
+                <p class="flex text-lg"><iconify-icon icon="material-symbols:logout"></iconify-icon></p>
+                <p>Sair</p>
+            </div>
+        </button>
     </div>
     <div style="display: none" id="mensagem"
         class="fixed grid-cols-12 items-center text-sm m-0 bg-[#010409] w-full h-[60px] top-0 border-b-2 border-[#30363d]">
@@ -24,51 +28,62 @@
             <button id="excluir-mensagem" class="text-white text-xl rotate-45">&#10010;</button>
         </div>
     </div>
-    <section class="m-4 lg:grid lg:grid-cols-2">
+    <section class="m-4 lg:grid lg:grid-cols-2 gap-x-8">
         <div
-            class="p-4 bg-[#0d1117] lg:bg-transparent lg:border-transparent lg:justify-center border-[#30363d] border-2 rounded-lg mb-8 lg:w-12/12">
-            <h1 class="w-full text-center text-3xl pb-8">Pesquisar Carga</h1>
-            <form id="buscar-carga-form">
-                <div class="grid lg:grid-cols-2 gap-y-5">
-                    <input class="hidden w-full lg:w-8/12 lg:col-span-2 lg:mx-auto px-4 rounded-xl h-[40px]" type="text"
-                        id="parametro1" name="parametro1" placeholder="Código da companhia:" required value="047">
-                    <input class="w-full lg:w-8/12 lg:col-span-2 lg:mx-auto px-4 rounded-xl h-[40px]" type="text"
-                        id="parametro2" name="parametro2" placeholder="ID aéreo:" required>
+            class="grid gap-y-6 p-6 mb-6 lg:mb-0 border-[#878787] border-opacity-50 border-[0.5px] rounded-lg lg:w-full bg-[#FFFFFF]">
+            <button onclick="logout()"
+                class="lg:flex hidden bg-[#000000] text-[#FFFFFF] text-sm font-medium w-min p-2 rounded-[10px] h-min">
+                <p class="flex text-lg"><iconify-icon icon="material-symbols:logout"></iconify-icon></p>
+                <p>Sair</p>
+            </button>
+            <h1 class="text-2xl font-medium">Pesquisar Carga</h1>
+            <form id="buscar-carga-form" class="grid gap-y-6">
+                <div class="grid gap-y-2">
+                    <input class="hidden" type="text" id="parametro1" name="parametro1"
+                        placeholder="Código da companhia:" required value="047">
+                    <label for="parametro2">ID aéreo:</label>
+                    <input class="w-full text-sm p-4 rounded-md h-[53px] border-[#282828] border-[0.6px]" type="text"
+                        id="parametro2" name="parametro2" placeholder="00000000" required>
                 </div>
-                <div id="busca-salva" style="display: block;" class="pt-8 w-full text-center">
-                    <button class="bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold"
+                <div id="busca-salva" style="display: block;" class="w-full justify-between">
+                    <button class="bg-[#242424] text-[#FFFFFF] h-[56px] rounded-md font-medium w-[48%]"
                         type="submit">Buscar</button>
-                    <input class="cursor-pointer bg-[#29903b] w-auto px-4 h-[40px] rounded-lg text-2xl font-bold"
-                        type="button" style="display: none;" id="salvar-carga-button" value="Salvar">
+                    <input class="bg-[#70D04F] text-[#FFFFFF] h-[56px] rounded-md font-medium w-[48%]" type="button"
+                        style="display: none;" id="salvar-carga-button" value="Salvar">
                 </div>
             </form>
         </div>
-        <div id="cargas-nova">
-            <div id="dados-atuais" class="p-4 lg:border-transparent border-[#30363d] border-2 rounded-lg mb-8"
-                style="display: none;"></div>
-        </div>
-        <div id="cargas-nova" class="lg:col-span-2 lg:gap-x-4">
-            <div id="historico" class="lg:grid lg:grid-cols-2 lg:gap-x-4"></div>
+        <div id="cargas-nova" style="display: none;"
+            class="grid p-6 border-[#878787] border-[0.5px] border-opacity-50 rounded-lg lg:w-full bg-[#FFFFFF]">
+            <div id="dados-atuais"></div>
+            <div id="cargas-nova" class="lg:col-span-2 lg:gap-x-4">
+                <div id="historico"></div>
+            </div>
         </div>
     </section>
-    <section class="border-t-2 mx-4">
-        <div class="lg:flex lg:mt-4">
-            <div>
-                <h1 class="text-4xl pt-4 lg:pl-12 font-bold">Cargas salvas</h1>
-                <div class="text-xl pt-4 lg:pl-12 font-bold mb-4 lg:mb-0" id="totalcargas"></div>
-            </div>
-            <div class="block lg:text-lg lg:ml-24 px-4 py-2 border-2 rounded-lg">
-                <div>
-                    <h1 class="text-center lg:text-2xl text-xl font-bold">Cotacão do Dólar</h1>
-                    <div id="cotacao"></div>
+    <section class="mx-4">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8 border lg:border-0 bg-[#FFFFFF] lg:bg-transparent border-[#878787] border-opacity-50 rounded-lg">
+            <div class="lg:rounded-lg lg:bg-[#FFFFFF] lg:border border-b  mx-4 border-[#878787] border-opacity-50 py-4  lg:p-6 col-span-3">
+                <h1 class="text-2xl font-medium">Cargas salvas</h1>
+                <div class="flex">
+                    <p>Total de cargas: </p>
+                    <div class="font-bold pl-2" id="totalcargas"></div>
                 </div>
-                <div class="mt-2">
-                    <p class="lg:text-base text-sm">Enviar e-mail com atualizações da cotação?</p>
-                    <div class="flex justify-center">
-                        <label class="switch">
-                            <input type="checkbox" id="salvar-cotacao-checkbox">
-                            <span class="slider"></span>
-                        </label>
+            </div>
+            <div class="lg:block px-6 py-4 bg-[#FFFFFF] lg:border border-[#878787] border-opacity-50 rounded-lg lg:col-span-9">
+                <div>
+                    <h1 class="font-medium">Cotacão do Dólar</h1>
+                    <div class="lg:flex lg:justify-between">
+                        <div id="cotacao"></div>
+                        <div class="flex text-[#585858]">
+                            <div class="mr-16">Enviar email de <br> atualização da cotação</div>
+                            <div class="flex flex-wrap content-center">
+                                <label class="switch">
+                                    <input type="checkbox" id="salvar-cotacao-checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,35 +128,28 @@
             const cargasContainer = document.getElementById('cargas-container');
             data.forEach(carga => {
                 cargasContainer.innerHTML += `
-            <div class="card border border-[#30363d] hover:bg-[#161b22 my-4 rounded-lg lg:gap-x-3">
-                <div class="grid grid-cols-3 justify-items-end border-b border-[#30363d] px-4 py-2">
-                    <p>Código Aéreo:</p>
-                    <p>${carga.numcodigoaereo}</p>
+            <div class="card border border-[#878787] bg-[#FFFFFF] my-4 rounded-lg lg:gap-x-3 border-opacity-50">
+                <div class="flex justify-between mx-3 border-b border-[#30363d] shadow-sm border-opacity-50 px-4 py-2 text-lg font-semibold">
+                    <p>Código Aéreo: <span class="ml-1">${carga.numcodigoaereo}</span></p>                    
                     <button class="delete-button text-end" data-carga-id="${carga.numcodigoaereo}">&#128465;</button>
                 </div>
-                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                    <p class="lg:text-xl">Status:</p>
-                    <p class="text-[#5cd26f] font-bold col-span-2 lg:text-xl">${carga.statusatual}</p>
+                <div class="flex px-4 py-2">
+                    <p>Status: <span class="font-bold text-[#00A3FF]">${carga.statusatual}</span></p>
                 </div>
-                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                    <p class="lg:text-xl">Origem:</p>
-                    <p class="font-bold col-span-2 lg:text-xl">${carga.partida}</p>
+                <div class="flex px-4 py-2">
+                    <p>Origem: <span class="font-bold">${carga.partida}</span></p>
                 </div>
-                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                    <p class="lg:text-xl">Destino:</p>
-                    <p class="font-bold col-span-2 lg:text-xl">${carga.chegada}</p>
+                <div class="flex px-4 py-2">
+                    <p>Destino: <span class="font-bold">${carga.chegada}</span></p>
                 </div>
-                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                    <p class="lg:text-xl">Voo:</p>
-                    <p class="font-bold col-span-2 lg:text-xl">${carga.flight}</p>
+                <div class="flex px-4 py-2">
+                    <p>Voo: <span class="font-bold">${carga.flight}</span></p>
                 </div>
-                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                    <p class="lg:text-xl">Peso:</p>
-                    <p class="font-bold col-span-2 lg:text-xl">${carga.weight}</p>
+                <div class="flex px-4 py-2">
+                    <p>Peso: <span class="font-bold">${carga.weight}</span></p>
                 </div>
-                <div class="grid grid-cols-3 px-4 py-2 justify-items-center">
-                    <p class="lg:text-xl">Resarva:</p>
-                    <p class="font-bold col-span-2 lg:text-xl">${carga.reservation}</p>
+                <div class="flex px-4 py-2">
+                    <p>Reserva: <span class="font-bold">${carga.reservation}</span></p>
                 </div>
             </div>
         `;
@@ -206,20 +214,21 @@
                 Object.keys(busca.DadosAtuais).forEach(key => {
                     if (key === 'state') {
                         dadosAtuaisDiv.innerHTML += `
-                            <div class="mb-4">
-                                <h1 class="w-full text-3xl pb-4">Descrição</h1>
-                                <p>Código aéreo: <span class="font-bold">${parametro1}-${parametro2}</span></p>
+                            <div>
+                                <h1 class="text-2xl font-medium mb-6">Descrição</h1>
                             </div>
-                            <div class="mb-4">
-                                <p>Status:</p>
-                                <p class="font-bold text-[#5cd26f]">${busca.DadosAtuais[key]}</p>
+                            <div class="grid gap-y-2 pb-2">
+                                <p>Código aéreo: <span class="font-bold">${parametro1}-${parametro2}</span></p>
+                                <div class="flex">
+                                    <p class="pr-1">Status:<span class="ml-1 font-bold text-[#00A3FF]">${busca.DadosAtuais[key]}</span></p>
+                                </div>
                             </div>
                 `;
                     } else {
                         dadosAtuaisDiv.innerHTML += `
-                        <div class="mb-4">
-                            <p class="capitalize">${key}</p>
-                            <p class="font-bold"> ${busca.DadosAtuais[key]}</p>
+                        <div class="flex">
+                            <p class="capitalize pr-1 pb-2">${key}:</p>
+                            <p class="font-bold pb-2"> ${busca.DadosAtuais[key]}</p>
                         </div>
                 `;
                     }
@@ -227,7 +236,7 @@
 
                 historicoDiv.innerHTML += ``;
                 busca.Historico.forEach(item => {
-                    let historicoItemHTML = `<div class="mb-4">`;
+                    let historicoItemHTML = `<div class="mb-4 toggle-container" style="position: relative;">`;
                     let flightValue;
 
                     Object.keys(item).forEach(key => {
@@ -237,17 +246,18 @@
                             flightValue = item[key];
                         }
                     });
-                    historicoItemHTML += `<button class="flex pb-8 toggleButton cursor-text h-[30px] w-full border border-[#30363d] px-4 bg-[#161b22] justify-between">
+                    historicoItemHTML += `<button class="flex toggleButton cursor-text text-white h-[56px] w-full rounded-md p-4 bg-[#454545] justify-between">
                         <p>${flightValue}</p>
                         <div>
-                            <span id="oi" class="rotate-90 text-3xl align-top mb-8" style="display: block;"> &#10151; </span>
-                            <span id="tchau" class="-rotate-90 text-3xl align-top" style="display: none;"> &#10151; </span>
+                            <span id="oi" class="rotate-90 text-2xl w-8 h-6" style="display: block;">></span>
+                            <span id="tchau" class="-rotate-90 text-2xl w-8 h-6" style="display: none;">></span>
                         </div>
                     </button>`;
-                    historicoItemHTML += `<div class="content-${busca.Historico.indexOf(item)} cursor-text" style="display: none;">`;
+
+                    historicoItemHTML += `<div class="content-${busca.Historico.indexOf(item)} cursor-text"  style="display: none; position: absolute; width: 100%; background-color: #EEEEEE; z-index: 999;">`;
                     Object.keys(item).forEach(key => {
                         historicoItemHTML += `
-                        <div class="grid grid-cols-2 border border-[#30363d] hover:bg-[#161b22] cursor-text">
+                        <div class="mx-4 grid grid-cols-2 border-b border-[#30363d] cursor-text">
                             <p class="py-2 px-4 cursor-text">${key}</p> 
                             <p class="py-2 px-4 cursor-text">${item[key]}</p>
                         </div>`;
@@ -275,12 +285,9 @@
                     });
                 });
 
-                document.getElementById('dados-atuais').style.display = 'block';
+                document.getElementById('cargas-nova').style.display = 'grid';
                 document.getElementById('salvar-carga-button').style.display = 'block';
                 document.getElementById('busca-salva').style.display = 'flex';
-                document.getElementById('busca-salva').style.justifyContent = 'space-around';
-                document.getElementById('busca-salva').style.paddingLeft = '15%';
-                document.getElementById('busca-salva').style.paddingRight = '15%';
                 if (busca.salvarNoBanco) {
                     document.getElementById('salvar-carga-button').style.display = 'block';
                 }
@@ -390,8 +397,10 @@
             if (Array.isArray(totalCargas)) {
                 const numRegistros = totalCargas.length;
 
+                const numRegistrosFormatado = String(numRegistros).padStart(2, '0');
+
                 const divTotalCargas = document.getElementById('totalcargas');
-                divTotalCargas.textContent = "Total de cargas (" + numRegistros + ")";
+                divTotalCargas.textContent = numRegistrosFormatado;
             } else {
                 console.error("Erro: A resposta não contém um array.");
             }
@@ -427,7 +436,7 @@
 
                 document.getElementById('parametro2').value = '';
 
-                document.getElementById('dados-atuais').style.display = 'block';
+                document.getElementById('cargas-nova').style.display = 'block';
                 document.getElementById('salvar-carga-button').style.display = 'none';
 
                 document.getElementById('mensagem-texto').classList.remove('green-text', 'red-text');
@@ -542,13 +551,20 @@
                 const cotacaoVenda = Cotacao.atual.value[0].cotacaoVenda;
                 const dataHoraCotacao = formatarDataHora(Cotacao.atual.value[0].dataHoraCotacao);
 
-                const cotacaoHTML = `
-                        <div>
-                            <p>Valor de compra: <span class="font-bold">${cotacaoCompra}</span></p>
-                            <p>Valor de venda: <span class="font-bold">${cotacaoVenda}</span></p>
-                        </div>
-                        <div>
-                            <p>Data de atualização: <span class="font-bold text-[#5cd26f]">${dataHoraCotacao}</span></p>
+                const cotacaoHTML = `                        
+                        <div class="lg:flex lg:gap-x-16 text-[#585858]">
+                            <div class="lg:block flex">
+                                <div>Valor de compra: </div>
+                                <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra}</div>
+                            </div>
+                            <div class="lg:block flex">
+                                <div>Valor de venda: </div>
+                                <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda}</div>
+                            </div>
+                            <div class="lg:block flex">
+                                <div>Data de atualização: </div>
+                                <div class="font-bold text-[#00A3FF] ml-1 lg:ml-0">${dataHoraCotacao}</div>
+                            </div>
                         </div>
                     `;
                 divCotation.innerHTML = cotacaoHTML;
@@ -558,13 +574,18 @@
                 const dataHoraCotacao = formatarDataHora(Cotacao.anterior.value[0].dataHoraCotacao);
 
                 const cotacaoHTML = `
-                        <div>
-                            <div>
-                                <p>Valor de compra: <span class="font-bold">${cotacaoCompra}</span></p>
-                                <p>Valor de venda: <span class="font-bold">${cotacaoVenda}</span></p>
+                        <div class="lg:flex lg:gap-x-16 text-[#585858]">
+                            <div class="lg:block flex">
+                                <div>Valor de compra: </div>
+                                <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra}</div>
                             </div>
-                            <div>
-                                <p>Data de atualização: <span class="font-bold text-[#5cd26f]">${dataHoraCotacao}</span></p>
+                            <div class="lg:block flex">
+                                <div>Valor de venda: </div>
+                                <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda}</div>
+                            </div>
+                            <div class="lg:block flex">
+                                <div>Data de atualização: </div>
+                                <div class="font-bold ml-1 lg:ml-0">${dataHoraCotacao}</div>
                             </div>
                         </div>
                     `;
