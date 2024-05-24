@@ -3,7 +3,7 @@
 body {
     margin-bottom: 5%;
     padding: 0;
-    background-color: #ffffff;
+    background-color: #5C5C5C;
     font-family: "Poppins", sans-serif;
 }
 
@@ -16,7 +16,7 @@ body {
 }
 
 .delete-button {
-    background-color: #ff0000;
+    background-color: #FF7272;
     border-radius: 10px; 
     padding-top: 2px; 
     padding-bottom: 2px; 
@@ -35,13 +35,23 @@ body {
     background-color: #cc0000;
 }
 
+#busca-salva {
+    display: flex; /* Default for larger screens */
+}
+
+@media (max-width: 768px) {
+    #busca-salva {
+        display: block; /* For mobile devices */
+    }
+}
 
 html {
-    color: #000000;
+    color: #FFFFFF;
 }
 
 input {
     background-color: #ffffff;
+    color: #000;
 }
 
 input:-webkit-autofill,

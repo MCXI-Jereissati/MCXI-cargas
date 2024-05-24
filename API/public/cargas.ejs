@@ -10,10 +10,13 @@
     <title>Visualizar Cargas</title>
 </head>
 
-<body class="bg-[#F9F9F9]">
-    <div class="lg:hidden block w-full text-xl text-end font-bold">
+<body>
+    <div class="lg:hidden flex justify-between w-full items-center text-xl m-4 font-bold">
+        <div>
+            <img src="./imagens/logo.png" class="w-32">
+        </div>
         <button onclick="logout()"
-            class="lg:hidden bg-[#000000] text-[#FFFFFF] text-sm font-medium w-min p-2 mr-4 mt-6 rounded-[10px] h-min">
+            class="lg:hidden bg-[#000000] text-[#FFFFFF] text-sm font-medium p-2 mr-9 rounded-[10px]">
             <div class="flex">
                 <p class="flex text-lg"><iconify-icon icon="material-symbols:logout"></iconify-icon></p>
                 <p>Sair</p>
@@ -21,7 +24,7 @@
         </button>
     </div>
     <div style="display: none" id="mensagem"
-        class="fixed grid-cols-12 items-center text-sm m-0 bg-[#FFFFFF] w-full h-[60px] top-0 border-b border-[#30363d] border-opacity-50">
+        class="fixed grid-cols-12 items-center text-sm m-0 bg-[#3E3E3E] w-full h-[60px] top-0 border-b border-[#30363d] border-opacity-50">
         <div class="col-span-1"></div>
         <span id="mensagem-texto" class="content-center mr-6 lg:text-xl col-span-10 text-center"></span>
         <div class="bg-[red] mr-4 w-7 h-7 flex justify-center items-center rounded-lg col-span-1">
@@ -29,13 +32,17 @@
         </div>
     </div>
     <section class="m-4 lg:grid lg:grid-cols-2 gap-x-8">
-        <div
-            class="grid gap-y-6 p-6 mb-6 lg:mb-0 border-[#878787] border-opacity-50 border-[0.5px] rounded-lg lg:w-full bg-[#FFFFFF]">
-            <button onclick="logout()"
-                class="lg:flex hidden bg-[#000000] text-[#FFFFFF] text-sm font-medium w-min p-2 rounded-[10px] h-min">
-                <p class="flex text-lg"><iconify-icon icon="material-symbols:logout"></iconify-icon></p>
-                <p>Sair</p>
-            </button>
+        <div class="grid gap-y-6 p-6 mb-6 lg:mb-0 border-[#878787] border-[0.5px] rounded-lg lg:w-full bg-[#3E3E3E]">
+            <div class="flex w-full justify-between">
+                <div class="hidden lg:block">
+                    <img src="./imagens/logo.png" class="w-32">
+                </div>
+                <button onclick="logout()"
+                    class="lg:flex hidden bg-[#000000] text-[#FFFFFF] text-sm font-medium w-min p-2 rounded-[10px] h-min">
+                    <p class="flex text-lg"><iconify-icon icon="material-symbols:logout"></iconify-icon></p>
+                    <p>Sair</p>
+                </button>
+            </div>
             <h1 class="text-2xl font-medium">Pesquisar Carga</h1>
             <form id="buscar-carga-form" class="grid gap-y-6">
                 <div class="grid gap-y-2">
@@ -45,40 +52,47 @@
                     <input class="w-full text-sm p-4 rounded-md h-[53px] border-[#282828] border-[0.6px]" type="text"
                         id="parametro2" name="parametro2" placeholder="00000000" required>
                 </div>
-                <div id="busca-salva" style="display: block;" class="w-full justify-between">
-                    <button class="bg-[#242424] text-[#FFFFFF] h-[56px] rounded-md font-medium w-[48%]"
+                <div id="busca-salva" class="w-full lg:justify-between">
+                    <button
+                        class="bg-[#2F2F2F] text-[#FFFFFF] h-[56px] border-[#72BB8B] border rounded-md font-medium w-full lg:w-[48%]"
                         type="submit">Buscar</button>
-                    <input class="bg-[#70D04F] text-[#FFFFFF] h-[56px] cursor-pointer rounded-md font-medium w-[48%]" type="button"
-                        style="display: none;" id="salvar-carga-button" value="Salvar">
+                    <input
+                        class="bg-[#72BB8B] text-[#FFFFFF] lg:mt-0 mt-5 h-[56px] cursor-pointer rounded-md font-medium w-full lg:w-[48%]"
+                        type="button" style="display: none;" id="salvar-carga-button" value="Salvar">
                 </div>
             </form>
         </div>
-        <div id="cargas-nova" style="display: none;"
-            class="grid p-6 border-[#878787] border-[0.5px] border-opacity-50 rounded-lg lg:w-full bg-[#FFFFFF]">
-            <div id="dados-atuais"></div>
-            <div id="cargas-nova" class="lg:col-span-2 lg:gap-x-4">
+        <div id="cargas-nova"
+            class="grid lg:p-6 lg:border-[#878787] lg:border-[0.5px] rounded-lg lg:w-full lg:bg-[#3E3E3E]"
+            style="display: none; ">
+            <div class="grid lg:p-0 p-6 border-[#878787] lg:border-0 border-[0.5px] rounded-lg lg:w-full bg-[#3E3E3E]"
+                id="dados-atuais"></div>
+            <div id="cargas-nova" class="lg:col-span-2 mt-4 lg:mt-0 lg:gap-x-4">
                 <div id="historico"></div>
             </div>
         </div>
     </section>
     <section class="mx-4">
         <div
-            class="lg:grid lg:grid-cols-12 lg:gap-4 border lg:border-0 bg-[#FFFFFF] lg:bg-transparent border-[#878787] border-opacity-50 rounded-lg">
+            class="lg:grid lg:grid-cols-12 lg:gap-4 border  bg-[#282828] lg:bg-transparent lg:border-0 border-[#878787] rounded-lg">
             <div
-                class="lg:rounded-lg lg:bg-[#FFFFFF] lg:border border-b lg:mx-0 mx-4 border-[#878787] border-opacity-50 py-4  lg:p-6 col-span-3">
-                <h1 class="text-2xl font-medium">Cargas salvas</h1>
-                <div class="flex">
-                    <p>Total de cargas: </p>
-                    <div class="font-bold pl-2" id="totalcargas"></div>
+                class="lg:rounded-lg lg:bg-[#282828] bg-transparent lg:gap-y-0 lg:flex justify-between lg:border border-b lg:mx-0 mx-4 border-[#878787] items-center py-4  lg:p-6 col-span-3">
+                <h1 class="text-2xl font-medium lg:block hidden">Cargas em Rota</h1>
+                <h1 class="text-2xl font-medium lg:hidden">Cargas salvas</h1>
+                <div class="lg:block flex lg:mt-0 mt-6">
+                    <p class="lg:hidden">Total de cargas: </p>
+                    <div class="flex lg:justify-center lg:items-center lg:rounded-full lg:bg-[#5C5C5C] lg:w-16 lg:h-16 pl-2 lg:pl-0">
+                        <div class="font-bold lg:text-2xl" id="totalcargas"></div>
+                    </div>
                 </div>
             </div>
             <div
-                class="lg:block px-6 py-4 bg-[#FFFFFF] lg:border border-[#878787] border-opacity-50 rounded-lg lg:col-span-9">
+                class="lg:block px-6 py-4 lg:bg-[#3E3E3E] bg-transparent lg:border border-[#878787] rounded-lg lg:col-span-9">
                 <div>
-                    <h1 class="font-medium">Cotacão do Dólar</h1>
+                    <h1 class="font-medium mb-2">Cotacão do Dólar</h1>
                     <div class="lg:flex lg:justify-between">
                         <div id="cotacao"></div>
-                        <div class="flex text-[#585858]">
+                        <div class="flex text-[#FFFFFF]">
                             <div class="mr-8">Enviar email de <br> atualização da cotação</div>
                             <div class="flex flex-wrap content-center">
                                 <label class="switch">
@@ -131,13 +145,13 @@
             const cargasContainer = document.getElementById('cargas-container');
             data.forEach(carga => {
                 cargasContainer.innerHTML += `
-            <div class="card border border-[#878787] bg-[#FFFFFF] my-4 rounded-lg lg:gap-x-3 border-opacity-50 px-4 lg:px-0">
-                <div class="flex justify-between mx-3 border-b border-[#30363d] shadow-sm border-opacity-50 lg:px-4 py-2 text-lg font-semibold">
+            <div class="card border border-[#878787] bg-[#282828] my-4 py-3 rounded-lg lg:gap-x-3 px-4 lg:px-0">
+                <div class="flex justify-between lg:mx-3 border-b border-[#E0E0E0] shadow-sm lg:px-4 py-2 text-lg font-semibold">
                     <p>Código Aéreo: <span class="ml-1">${carga.numcodigoaereo}</span></p>                    
-                    <button class="hidden lg:block delete-button text-end" data-carga-id="${carga.numcodigoaereo}">&#128465;</button>
+                    <button class="hidden lg:flex items-center delete-button text-end" data-carga-id="${carga.numcodigoaereo}">&#128465;</button>
                 </div>
                 <div class="flex lg:px-4 py-2">
-                    <p>Status: <span class="font-bold text-[#00A3FF]">${carga.statusatual}</span></p>
+                    <p>Status: <span class="font-bold text-[#72BB8B]">${carga.statusatual}</span></p>
                 </div>
                 <div class="flex lg:px-4 py-2">
                     <p>Origem: <span class="font-bold">${carga.partida}</span></p>
@@ -154,7 +168,7 @@
                 <div class="flex lg:px-4 pt-2">
                     <p>Reserva: <span class="font-bold">${carga.reservation}</span></p>
                 </div>
-                <button class="lg:hidden flex flex-wrap content-center delete-button w-full mb-4 h-14 rounded-md mt-6 font-medium text-base" data-carga-id="${carga.numcodigoaereo}">Excluir carga</button>
+                <button class="lg:hidden text-[#282828] flex flex-wrap content-center delete-button w-full mb-4 h-14 rounded-md mt-6 font-medium text-base" data-carga-id="${carga.numcodigoaereo}">Excluir carga</button>
             </div>
         `;
             });
@@ -224,15 +238,15 @@
                             <div class="grid gap-y-2 pb-2">
                                 <p>Código aéreo: <span class="font-bold">${parametro1}-${parametro2}</span></p>
                                 <div class="flex">
-                                    <p class="pr-1">Status:<span class="ml-1 font-bold text-[#00A3FF]">${busca.DadosAtuais[key]}</span></p>
+                                    <p class="pr-1">Status:<span class="ml-1 font-bold text-[#72BB8B]">${busca.DadosAtuais[key]}</span></p>
                                 </div>
                             </div>
                 `;
                     } else {
                         dadosAtuaisDiv.innerHTML += `
-                        <div class="flex">
-                            <p class="capitalize pr-1 pb-2">${key}:</p>
-                            <p class="font-bold pb-2"> ${busca.DadosAtuais[key]}</p>
+                        <div class="lg:flex pb-2 lg:pb-0">
+                            <p class="capitalize pr-1 lg:pb-2">${key}:</p>
+                            <p class="font-bold lg:pb-2"> ${busca.DadosAtuais[key]}</p>
                         </div>
                 `;
                     }
@@ -250,7 +264,7 @@
                             flightValue = item[key];
                         }
                     });
-                    historicoItemHTML += `<button class="flex toggleButton cursor-pointer text-white h-[56px] w-full rounded-md p-4 bg-[#454545] justify-between">
+                    historicoItemHTML += `<button class="flex toggleButton cursor-pointer text-white h-[56px] w-full rounded-md p-4 bg-[#3E3E3E] lg:bg-transparent lg:border-2 border-[#282828] justify-between">
                         <p>${flightValue}</p>
                         <div>
                             <span id="oi" class="rotate-90 text-2xl w-8 h-6" style="display: block;">></span>
@@ -258,7 +272,7 @@
                         </div>
                     </button>`;
 
-                    historicoItemHTML += `<div class="content-${busca.Historico.indexOf(item)} cursor-text"  style="display: none; position: absolute; width: 100%; background-color: #EEEEEE; z-index: 999;">`;
+                    historicoItemHTML += `<div class="content-${busca.Historico.indexOf(item)} cursor-text text-black"  style="display: none; position: absolute; width: 100%; background-color: #EEEEEE; z-index: 999;">`;
                     Object.keys(item).forEach(key => {
                         historicoItemHTML += `
                         <div class="mx-4 grid grid-cols-2 border-b border-[#30363d] cursor-text">
@@ -291,7 +305,14 @@
 
                 document.getElementById('cargas-nova').style.display = 'grid';
                 document.getElementById('salvar-carga-button').style.display = 'block';
-                document.getElementById('busca-salva').style.display = 'flex';
+                function adjustDisplay() {
+                    var element = document.getElementById('busca-salva');
+                    if (window.innerWidth <= 768) {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'flex';
+                    }
+                }
                 if (busca.salvarNoBanco) {
                     document.getElementById('salvar-carga-button').style.display = 'block';
                 }
@@ -550,7 +571,7 @@
                 const dataHoraCotacao = formatarDataHora(Cotacao.atual.value[0].dataHoraCotacao);
 
                 const cotacaoHTML = `                        
-                        <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#585858]">
+                        <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
                             <div class="lg:block flex">
                                 <div>Valor de compra(PTAX): </div>
                                 <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra}</div>
@@ -561,7 +582,7 @@
                             </div>
                             <div class="lg:block flex mb-2">
                                 <div>Data de atualização: </div>
-                                <div class="font-bold text-[#00A3FF] ml-1 lg:ml-0">${dataHoraCotacao}</div>
+                                <div class="font-bold text-[#72BB8B] ml-1 lg:ml-0">${dataHoraCotacao}</div>
                             </div>
                         </div>
                     `;
@@ -572,7 +593,7 @@
                 const dataHoraCotacao = formatarDataHora(Cotacao.anterior.value[0].dataHoraCotacao);
 
                 const cotacaoHTML = `
-                        <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#585858]">
+                        <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
                             <div class="lg:block flex">
                                 <div>Valor de compra(PTAX): </div>
                                 <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra}</div>
