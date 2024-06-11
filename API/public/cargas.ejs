@@ -50,7 +50,7 @@
                         placeholder="Código da companhia:" required value="047">
                     <label for="parametro2">ID aéreo:</label>
                     <input class="w-full text-sm p-4 text-black rounded-md h-[53px] border-[#282828] border-[0.6px]"
-                        type="text" id="parametro2" name="parametro2" placeholder="00000000" required>
+                        type="text" id="parametro2" name="parametro2" placeholder="00000000" required autofocus>
                 </div>
                 <div id="busca-salva" class="w-full lg:justify-between">
                     <button
@@ -510,10 +510,10 @@
 
             const checkbox = document.getElementById('salvar-cotacao-checkbox');
 
-            if (todasCotacoes.some(cotacao => cotacao.enviaremail === false)) {
-                checkbox.checked = false;
-            } else {
+            if (todasCotacoes.some(cotacao => cotacao.enviaremail === true)) {
                 checkbox.checked = true;
+            } else {
+                checkbox.checked = false;
             }
 
         } catch (error) {
