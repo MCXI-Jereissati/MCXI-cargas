@@ -546,7 +546,6 @@
 
     async function cotacaoAtualizada() {
         try {
-            console.log('Buscando cotações...');
             const response = await fetch('/busca-cotacao', {
                 method: 'POST',
                 headers: {
@@ -558,6 +557,7 @@
             const divCotation = document.getElementById('cotacao');
 
             if (!divCotation) {
+                console.error('Elemento com ID "cotacao" não encontrado.');
                 return;
             }
 
