@@ -49,8 +49,8 @@
                     <input class="hidden" type="text" id="parametro1" name="parametro1"
                         placeholder="Código da companhia:" required value="047">
                     <label for="parametro2">ID aéreo:</label>
-                    <input class="w-full text-sm p-4 text-black rounded-md h-[53px] border-[#282828] border-[0.6px]" type="text"
-                        id="parametro2" name="parametro2" placeholder="00000000" required>
+                    <input class="w-full text-sm p-4 text-black rounded-md h-[53px] border-[#282828] border-[0.6px]"
+                        type="text" id="parametro2" name="parametro2" placeholder="00000000" required>
                 </div>
                 <div id="busca-salva" class="w-full lg:justify-between">
                     <button
@@ -546,6 +546,7 @@
 
     async function cotacaoAtualizada() {
         try {
+            console.log('Buscando cotações...');
             const response = await fetch('/busca-cotacao', {
                 method: 'POST',
                 headers: {
@@ -553,8 +554,13 @@
                 }
             });
             const Cotacao = await response.json();
+            console.log('Cotações recebidas:', Cotacao);
 
             const divCotation = document.getElementById('cotacao');
+
+            if (!divCotation) {
+                return;
+            }
 
             function formatarDataHora(dataHora) {
                 const data = new Date(dataHora);
@@ -566,60 +572,63 @@
                 return `${dia}/${mes}/${ano} ${hora}:${minutos}`;
             }
 
-            if (Cotacao.atual.value.length > 0) {
+            let cotacaoHTML = '';
+            if (Cotacao.atual && Cotacao.atual.value && Cotacao.atual.value.length > 0) {
                 const cotacaoCompra = Cotacao.atual.value[0].cotacaoCompra;
                 const cotacaoVenda = Cotacao.atual.value[0].cotacaoVenda;
                 const dataHoraCotacao = formatarDataHora(Cotacao.atual.value[0].dataHoraCotacao);
 
-                const cotacaoHTML = `                        
-                        <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
-                            <div class="lg:block flex">
-                                <div>Valor de compra(PTAX): </div>
-                                <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
-                            </div>
-                            <div class="lg:block flex">
-                                <div>Valor de venda(PTAX): </div>
-                                <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
-                            </div>
-                            <div class="lg:block flex mb-2">
-                                <div>Data de atualização: </div>
-                                <div class="font-bold text-[#72BB8B] ml-1 lg:ml-0">${dataHoraCotacao}</div>
-                            </div>
-                        </div>
-                    `;
-                divCotation.innerHTML = cotacaoHTML;
-            } else {
+                cotacaoHTML = `                        
+                <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
+                    <div class="lg:block flex">
+                        <div>Valor de compra(PTAX): </div>
+                        <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
+                    </div>
+                    <div class="lg:block flex">
+                        <div>Valor de venda(PTAX): </div>
+                        <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
+                    </div>
+                    <div class="lg:block flex mb-2">
+                        <div>Data de atualização: </div>
+                        <div class="font-bold text-[#72BB8B] ml-1 lg:ml-0">${dataHoraCotacao}</div>
+                    </div>
+                </div>`;
+            } else if (Cotacao.anterior && Cotacao.anterior.value && Cotacao.anterior.value.length > 0) {
                 const cotacaoCompra = Cotacao.anterior.value[0].cotacaoCompra;
                 const cotacaoVenda = Cotacao.anterior.value[0].cotacaoVenda;
                 const dataHoraCotacao = formatarDataHora(Cotacao.anterior.value[0].dataHoraCotacao);
 
-                const cotacaoHTML = `
-                        <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
-                            <div class="lg:block flex">
-                                <div>Valor de compra(PTAX): </div>
-                                <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
-                            </div>
-                            <div class="lg:block flex">
-                                <div>Valor de venda(PTAX): </div>
-                                <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
-                            </div>
-                            <div class="lg:block flex">
-                                <div>Data de atualização: </div>
-                                <div class="font-bold ml-1 lg:ml-0">${dataHoraCotacao}</div>
-                            </div>
-                        </div>
-                    `;
-                divCotation.innerHTML = cotacaoHTML;
+                cotacaoHTML = `
+                <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
+                    <div class="lg:block flex">
+                        <div>Valor de compra(PTAX): </div>
+                        <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
+                    </div>
+                    <div class="lg:block flex">
+                        <div>Valor de venda(PTAX): </div>
+                        <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
+                    </div>
+                    <div class="lg:block flex">
+                        <div>Data de atualização: </div>
+                        <div class="font-bold ml-1 lg:ml-0">${dataHoraCotacao}</div>
+                    </div>
+                </div>`;
+            } else {
+                console.log('Nenhuma cotação disponível');
             }
+
+            divCotation.innerHTML = cotacaoHTML;
 
         } catch (error) {
             console.error('Erro ao buscar cotações:', error);
         }
     }
-
+    
     totalCargas();
     cotacaoAtualizada();
     buscarTodasCotacoes();
+
+    setInterval(cotacaoAtualizada, 60000);
 </script>
 
 </html>
