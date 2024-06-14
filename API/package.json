@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "install-prod": "npm install --omit=dev"
     "start": "npm-run-all --parallel api tailwind",
     "api": "nodemon index.js",
     "tailwind": "npx tailwindcss -i ./public/style/input.css -o ./public/dist/output.css --watch"
