@@ -195,8 +195,8 @@ export const updateSaveCotacao = async () => {
                                 <p>Segue abaixo os detalhes da cotação atual:</p>
                                 <ul>
                                     <li>Data e Hora: ${cotacaoAtual.dataHoraCotacao}</li>
-                                    <li>Cotação de Compra: ${cotacaoAtual.cotacaoCompra.toFixed(4).replace('.', ',')}</li>
-                                    <li>Cotação de Venda: ${cotacaoAtual.cotacaoVenda.toFixed(4).replace('.', ',')}</li>
+                                    <li>Cotação de Compra <strong>(PTAX)</strong>: ${cotacaoAtual.cotacaoCompra.toFixed(4).replace('.', ',')}</li>
+                                    <li>Cotação de Venda <strong>(PTAX)</strong>: ${cotacaoAtual.cotacaoVenda.toFixed(4).replace('.', ',')}</li>
                                 </ul>
                                 <p>Atenciosamente,<br/>Sua Aplicação</p>
                             `;
