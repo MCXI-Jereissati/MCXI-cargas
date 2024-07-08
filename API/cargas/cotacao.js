@@ -223,3 +223,20 @@ cron.schedule('*/5 6-18 * * *', async () => {
 }, {
     timezone: 'America/Sao_Paulo'
 });
+
+const getPreviousBusinessDay = () => {
+    let previousDate = new Date(Date.now() - 86400000);
+    const day = previousDate.getDay();
+
+    if (day === 0) { 
+        previousDate = new Date(previousDate.getTime() - 2 * 86400000);
+    } else if (day === 1) {
+        previousDate = new Date(previousDate.getTime() - 3 * 86400000);
+    }
+
+    return previousDate.toLocaleDateString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric'
+    }).split('/').join('-');
+}
