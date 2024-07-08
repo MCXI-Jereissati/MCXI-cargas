@@ -192,7 +192,7 @@ export const updateSaveCotacao = async () => {
                                 <p>Segue abaixo os detalhes da cotação atual:</p>
                                 <ul>
                                     <li>Data e Hora: ${cotacaoAtual.dataHoraCotacao}</li>
-                                    <li>Cotação de Compra <strong>(PTAX)</strong>: ${cotacaoAtual.cotacaoCompra.toFixed(4).replace('.', ',')}</li>
+                                    <li>Cotação de Compra: ${cotacaoAtual.cotacaoCompra.toFixed(4).replace('.', ',')}</li>
                                     <li>Cotação de Venda <strong>(PTAX)</strong>: ${cotacaoAtual.cotacaoVenda.toFixed(4).replace('.', ',')}</li>
                                 </ul>
                                 <p>Atenciosamente,<br/>Sua Aplicação</p>
@@ -223,20 +223,3 @@ cron.schedule('*/5 6-18 * * *', async () => {
 }, {
     timezone: 'America/Sao_Paulo'
 });
-
-const getPreviousBusinessDay = () => {
-    let previousDate = new Date(Date.now() - 86400000); 
-    const day = previousDate.getDay();
-
-    if (day === 0) { 
-        previousDate = new Date(previousDate.getTime() - 2 * 86400000); 
-    } else if (day === 1) { 
-        previousDate = new Date(previousDate.getTime() - 3 * 86400000);
-    }
-
-    return previousDate.toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric'
-    }).split('/').join('-');
-}
