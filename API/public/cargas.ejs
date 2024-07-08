@@ -90,7 +90,12 @@
             <div
                 class="lg:block px-6 py-4 lg:bg-[#3E3E3E] bg-transparent lg:border border-[#878787] rounded-lg lg:col-span-9">
                 <div>
-                    <h1 class="font-medium mb-2">Cotacão do Dólar</h1>
+                    <div class="flex flex-wrap items-center mb-2">
+                        <h1 class="font-medium">Cotacão do Dólar</h1>
+                        <button id="atualizarCotacaoBtn"
+                            class="bg-[#2F2F2F] ml-4 text-[#FFFFFF] border-[#72BB8B] py-0.5 px-2 border rounded-md font-medium">Atualizar
+                            cotação</button>
+                    </div>
                     <div class="lg:flex lg:justify-between">
                         <div id="cotacao"></div>
                         <div class="flex text-[#FFFFFF]">
@@ -578,40 +583,40 @@
                 const dataHoraCotacao = formatarDataHora(Cotacao.atual.value[0].dataHoraCotacao);
 
                 cotacaoHTML = `                        
-                <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
-                    <div class="lg:block flex">
-                        <div>Valor de compra(PTAX): </div>
-                        <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
-                    </div>
-                    <div class="lg:block flex">
-                        <div>Valor de venda(PTAX): </div>
-                        <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
-                    </div>
-                    <div class="lg:block flex mb-2">
-                        <div>Data de atualização: </div>
-                        <div class="font-bold text-[#72BB8B] ml-1 lg:ml-0">${dataHoraCotacao}</div>
-                    </div>
-                </div>`;
+            <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
+                <div class="lg:block flex">
+                    <div>Valor de compra(PTAX): </div>
+                    <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
+                </div>
+                <div class="lg:block flex">
+                    <div>Valor de venda(PTAX): </div>
+                    <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
+                </div>
+                <div class="lg:block flex mb-2">
+                    <div>Data de atualização: </div>
+                    <div class="font-bold text-[#72BB8B] ml-1 lg:ml-0">${dataHoraCotacao}</div>
+                </div>
+            </div>`;
             } else if (Cotacao.anterior && Cotacao.anterior.value && Cotacao.anterior.value.length > 0) {
                 const cotacaoCompra = Cotacao.anterior.value[0].cotacaoCompra;
                 const cotacaoVenda = Cotacao.anterior.value[0].cotacaoVenda;
                 const dataHoraCotacao = formatarDataHora(Cotacao.anterior.value[0].dataHoraCotacao);
 
                 cotacaoHTML = `
-                <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
-                    <div class="lg:block flex">
-                        <div>Valor de compra(PTAX): </div>
-                        <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
-                    </div>
-                    <div class="lg:block flex">
-                        <div>Valor de venda(PTAX): </div>
-                        <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
-                    </div>
-                    <div class="lg:block flex">
-                        <div>Data de atualização: </div>
-                        <div class="font-bold ml-1 lg:ml-0">${dataHoraCotacao}</div>
-                    </div>
-                </div>`;
+            <div class="lg:flex lg:gap-x-12 grid gap-y-2 text-[#FFFFFF]">
+                <div class="lg:block flex">
+                    <div>Valor de compra(PTAX): </div>
+                    <div class="font-bold ml-1 lg:ml-0">${cotacaoCompra.toFixed(4).replace('.', ',')}</div>
+                </div>
+                <div class="lg:block flex">
+                    <div>Valor de venda(PTAX): </div>
+                    <div class="font-bold ml-1 lg:ml-0">${cotacaoVenda.toFixed(4).replace('.', ',')}</div>
+                </div>
+                <div class="lg:block flex">
+                    <div>Data de atualização: </div>
+                    <div class="font-bold ml-1 lg:ml-0">${dataHoraCotacao}</div>
+                </div>
+            </div>`;
             } else {
                 console.log('Nenhuma cotação disponível');
             }
@@ -622,7 +627,9 @@
             console.error('Erro ao buscar cotações:', error);
         }
     }
-    
+
+    document.getElementById('atualizarCotacaoBtn').addEventListener('click', cotacaoAtualizada);
+
     totalCargas();
     cotacaoAtualizada();
     buscarTodasCotacoes();

@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import cron from 'node-cron';
 import nodemailer from 'nodemailer';
 
-export const buscarCotacao = async (req) => {
+export const buscarCotacao = async (req, res) => {
     const { salvarNoBanco = false, enviarEmail = false } = req.body;
 
     const dataAtual = new Date().toLocaleDateString('en-US', {
@@ -12,11 +12,7 @@ export const buscarCotacao = async (req) => {
         year: 'numeric'
     }).split('/').join('-');
 
-    const dataAnterior = new Date(Date.now() - 86400000).toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric'
-    }).split('/').join('-');
+    const dataAnterior = getPreviousBusinessDay();
 
     const urlAtual = `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${dataAtual}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao`;
 
@@ -52,11 +48,12 @@ export const buscarCotacao = async (req) => {
 
         return dadosSalvos;
     } catch (error) {
-        throw new Error(error.message);
+        console.error('Erro ao buscar cotação:', error);
+        throw new Error('Erro ao buscar cotação: ' + error.message);
     }
 };
 
-export const buscarCotacaoAuto = async (req) => {
+export const buscarCotacaoAuto = async () => {
 
     const dataAtual = new Date().toLocaleDateString('en-US', {
         month: '2-digit',
@@ -64,11 +61,7 @@ export const buscarCotacaoAuto = async (req) => {
         year: 'numeric'
     }).split('/').join('-');
 
-    const dataAnterior = new Date(Date.now() - 86400000).toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric'
-    }).split('/').join('-');
+    const dataAnterior = getPreviousBusinessDay();
 
     const urlAtual = `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${dataAtual}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao`;
 
@@ -90,7 +83,8 @@ export const buscarCotacaoAuto = async (req) => {
 
         return { atual: jsonDataAtual, anterior: jsonDataAnterior };
     } catch (error) {
-        throw new Error(error.message);
+        console.error('Erro ao buscar cotação automática:', error);
+        throw new Error('Erro ao buscar cotação automática: ' + error.message);
     }
 };
 
@@ -126,7 +120,8 @@ export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra
             console.log('Os dados da cotação foram salvos para o usuário', userId);
         }
     } catch (error) {
-        throw new Error(error.message);
+        console.error('Erro ao salvar cotação:', error);
+        throw new Error('Erro ao salvar cotação: ' + error.message);
     }
 };
 
@@ -139,6 +134,7 @@ export const getAllCotacao = async (userId) => {
         const result = await db.query(query, [userId]);
         return result.rows;
     } catch (error) {
+        console.error('Erro ao obter cotações salvas:', error);
         throw new Error('Erro ao obter cotações salvas: ' + error.message);
     }
 };
@@ -164,6 +160,7 @@ export const enviarEmail = async (destinatario, assunto, corpo) => {
         console.log('E-mail enviado com sucesso para', destinatario);
     } catch (error) {
         console.error('Erro ao enviar e-mail:', error);
+        throw new Error('Erro ao enviar e-mail: ' + error.message);
     }
 };
 
@@ -215,8 +212,6 @@ export const updateSaveCotacao = async () => {
                     console.error('Erro ao processar as cotações para o usuário', row.user_id, ':', error.message);
                 }
             }
-        } else {
-            console.log('Não foram encontrados itens salvos na tabela cotacao.');
         }
     } catch (error) {
         console.error('Erro ao buscar e atualizar os itens salvos:', error.message);
@@ -228,3 +223,20 @@ cron.schedule('*/5 6-18 * * *', async () => {
 }, {
     timezone: 'America/Sao_Paulo'
 });
+
+const getPreviousBusinessDay = () => {
+    let previousDate = new Date(Date.now() - 86400000); 
+    const day = previousDate.getDay();
+
+    if (day === 0) { 
+        previousDate = new Date(previousDate.getTime() - 2 * 86400000); 
+    } else if (day === 1) { 
+        previousDate = new Date(previousDate.getTime() - 3 * 86400000);
+    }
+
+    return previousDate.toLocaleDateString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric'
+    }).split('/').join('-');
+}

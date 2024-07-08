@@ -6,9 +6,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const createUser = async (req, res) => {
-  const { nome, email, senha, admin } = req.body; 
+  const { nome, email, senha, admin } = req.body;
 
   try {
+    const emailQuery = `SELECT * FROM users WHERE email = $1;`;
+    const emailResult = await db.query(emailQuery, [email]);
+
+    if (emailResult.rows.length > 0) {
+      return res.status(400).json({ error: 'E-mail já está em uso' });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedSenha = await bcrypt.hash(senha, salt);
 
@@ -18,7 +25,6 @@ export const createUser = async (req, res) => {
       RETURNING *;`;
 
     const values = [nome, email, hashedSenha, salt, admin];
-
     const result = await db.query(query, values);
 
     const newUser = result.rows[0];
@@ -30,7 +36,7 @@ export const createUser = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, senha } = req.body; 
+  const { email, senha } = req.body;
 
   try {
     const query = `SELECT * FROM users WHERE email = $1;`;
@@ -40,7 +46,7 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    const user = result.rows[0]; 
+    const user = result.rows[0];
 
     const senhaMatch = await bcrypt.compare(senha, user.senha);
 
@@ -50,7 +56,7 @@ export const login = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user.id, email: user.email, isAdmin: user.admin },
-      process.env.TOKEN_JWT, 
+      process.env.TOKEN_JWT,
       { expiresIn: '30d' }
     );
 
