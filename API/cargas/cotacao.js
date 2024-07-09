@@ -224,14 +224,15 @@ cron.schedule('*/5 6-18 * * *', async () => {
     timezone: 'America/Sao_Paulo'
 });
 
-const getPreviousBusinessDay = () => {
-    let previousDate = new Date(Date.now() - 86400000);
-    const day = previousDate.getDay();
+const getPreviousBusinessDay = (baseDate = new Date()) => {
+    let previousDate = new Date(baseDate.getTime() - 86400000); 
+    let day = previousDate.getDay();
 
-    if (day === 0) { 
-        previousDate = new Date(previousDate.getTime() - 2 * 86400000);
-    } else if (day === 1) {
-        previousDate = new Date(previousDate.getTime() - 3 * 86400000);
+    if (day === 0) {
+        previousDate.setDate(previousDate.getDate() - 2);
+    } 
+    else if (day === 6) {
+        previousDate.setDate(previousDate.getDate() - 1);
     }
 
     return previousDate.toLocaleDateString('en-US', {
