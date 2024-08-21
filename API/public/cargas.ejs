@@ -545,7 +545,7 @@
 
             console.log('Cotação salva com sucesso.');
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao escolher receber dados de cotação: ', error);
             this.checked = false;
         }
     });
