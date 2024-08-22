@@ -11,7 +11,8 @@ export const db = new Client({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
   connectionTimeoutMillis: 5000,
-  query_timeout: 10000
+  query_timeout: 10000,
+  keepAlive: true,
 });
 
 const createTableUser = `
@@ -67,12 +68,18 @@ async function connectAndCreateTables(retries = 5, delay = 1000) {
       return;
     } catch (err) {
       console.error('Erro na conexão ou criação de tabelas:', err);
-      if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
+      
+      if (
+        err.code === 'ECONNREFUSED' || 
+        err.code === 'ETIMEDOUT' || 
+        err.code === 'ECONNRESET' || 
+        err.code === 'ECONNABORTED'
+      ) {
         console.error(`Tentativa ${i + 1} falhou, tentando novamente em ${delay / 1000} segundos...`);
         await new Promise(resolve => setTimeout(resolve, delay));
         delay *= 2;
       } else {
-        throw err;
+        throw err; 
       }
     }
   }
