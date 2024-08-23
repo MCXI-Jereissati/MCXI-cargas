@@ -86,7 +86,30 @@ async function connectAndCreateTables(retries = 5, delay = 1000) {
   console.error('Falha após múltiplas tentativas.');
 }
 
-connectAndCreateTables().catch(err => {
+async function maintainConnection() {
+  while (true) {
+    try {
+      await connectAndCreateTables();
+      console.log('Conexão estável.');
+      break;
+    } catch (err) {
+      console.error('Tentando reconectar após perda de conexão...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+
+  db.on('end', async () => {
+    console.error('Conexão com o PostgreSQL encerrada. Tentando reconectar...');
+    maintainConnection();
+  });
+
+  db.on('error', async (err) => {
+    console.error('Erro na conexão com o PostgreSQL:', err);
+    maintainConnection();
+  });
+}
+
+maintainConnection().catch(err => {
   console.error('Erro fatal:', err);
   process.exit(1);
 });
