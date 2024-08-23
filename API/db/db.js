@@ -10,8 +10,8 @@ export const db = new Client({
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  connectionTimeoutMillis: 5000,
-  query_timeout: 10000,
+  connectionTimeoutMillis: 10000, 
+  query_timeout: 30000,  
   keepAlive: true,
 });
 
