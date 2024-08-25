@@ -107,7 +107,6 @@ export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra
 
             await db.query(updateQuery, updateValues);
 
-            console.log('Os dados da cotação foram atualizados para o usuário', userId);
         } else {
             const insertQuery = `
                 INSERT INTO cotacao (user_id, nome, dataHoraCotacao, cotacaoCompra, cotacaoVenda, enviarEmail)
@@ -117,7 +116,6 @@ export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra
 
             await db.query(insertQuery, values);
 
-            console.log('Os dados da cotação foram salvos para o usuário', userId);
         }
     } catch (error) {
         console.error('Erro ao salvar cotação:', error);
