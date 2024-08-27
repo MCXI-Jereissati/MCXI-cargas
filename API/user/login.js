@@ -73,7 +73,9 @@ export const login = async (req, res) => {
   } catch (err) {
     console.error('Erro no login:', err);
     res.status(500).json({ error: 'Erro interno do servidor' });
-  }
+  } finally {
+    await db.end();
+}
 };
 
 export const logout = () => {

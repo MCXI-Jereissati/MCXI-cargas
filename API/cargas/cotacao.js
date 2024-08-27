@@ -52,6 +52,8 @@ export const buscarCotacao = async (req, res) => {
     } catch (error) {
         console.error('Erro ao buscar cotação:', error);
         throw new Error('Erro ao buscar cotação: ' + error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -89,6 +91,8 @@ export const buscarCotacaoAuto = async () => {
     } catch (error) {
         console.error('Erro ao buscar cotação automática:', error);
         throw new Error('Erro ao buscar cotação automática: ' + error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -126,6 +130,8 @@ export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra
     } catch (error) {
         console.error('Erro ao salvar cotação:', error);
         throw new Error('Erro ao salvar cotação: ' + error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -142,6 +148,8 @@ export const getAllCotacao = async (userId) => {
     } catch (error) {
         console.error('Erro ao obter cotações salvas:', error);
         throw new Error('Erro ao obter cotações salvas: ' + error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -223,8 +231,10 @@ export const updateSaveCotacao = async () => {
         }
     } catch (error) {
         console.error('Erro ao buscar e atualizar os itens salvos:', error.message);
+    } finally {
+        await db.end();
     }
-}
+};
 
 cron.schedule('*/5 6-18 * * *', async () => {
     await updateSaveCotacao();

@@ -64,6 +64,8 @@ export const buscarCargas = async (req, userId) => {
       return jsonData;
     } catch (error) {
         throw new Error(error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -122,6 +124,8 @@ export const buscarCargasAuto = async (parametro1, parametro2) => {
         return jsonData;
     } catch (error) {
         throw new Error(error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -154,6 +158,8 @@ export const salvarCargas = async (userId, countryCode, consignmentNote, data) =
         }
     } catch (error) {
         throw new Error(error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -169,6 +175,8 @@ export const getAllCargas = async (userId) => {
         return result.rows;
     } catch (error) {
         throw new Error('Erro ao obter cargas salvas: ' + error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -184,6 +192,8 @@ export const getCargasById = async (userId, numCodigoAereo) => {
         return result.rows[0];
     } catch (error) {
         throw new Error('Erro ao buscar carga por código aéreo: ' + error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -199,6 +209,8 @@ export const deleteCargasById = async (userId, numCodigoAereo) => {
         return result.rows[0];
     } catch (error) {
         throw new Error('Erro ao buscar carga por código aéreo: ' + error.message);
+    } finally {
+        await db.end();
     }
 };
 
@@ -321,6 +333,8 @@ export const updateSaveCargas = async () => {
         }
     } catch (error) {
         console.error('Erro ao buscar e atualizar os itens salvos:', error.message);
+    } finally {
+        await db.end();
     }
 };
 
