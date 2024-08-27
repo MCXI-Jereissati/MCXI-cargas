@@ -1,9 +1,10 @@
-import { db } from "../db/db.js";
 import fetch from 'node-fetch'; 
 import cron from 'node-cron';
 import nodemailer from 'nodemailer';
+import { createDbClient } from "../db/db.js";
 
 export const buscarCotacao = async (req, res) => {
+    const db = createDbClient();
     const { salvarNoBanco = false, enviarEmail = false } = req.body;
 
     const dataAtual = new Date().toLocaleDateString('en-US', {
@@ -18,7 +19,8 @@ export const buscarCotacao = async (req, res) => {
 
     const urlAnterior = `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${dataAnterior}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao`;
 
-    try {
+    try {        
+        await db.connect();
         const [responseAtual, responseAnterior] = await Promise.all([fetch(urlAtual), fetch(urlAnterior)]);
         
         if (!responseAtual.ok) {
@@ -54,6 +56,7 @@ export const buscarCotacao = async (req, res) => {
 };
 
 export const buscarCotacaoAuto = async () => {
+    const db = createDbClient();
 
     const dataAtual = new Date().toLocaleDateString('en-US', {
         month: '2-digit',
@@ -68,6 +71,7 @@ export const buscarCotacaoAuto = async () => {
     const urlAnterior = `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${dataAnterior}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao`;
 
     try {
+        await db.connect();
         const [responseAtual, responseAnterior] = await Promise.all([fetch(urlAtual), fetch(urlAnterior)]);
         
         if (!responseAtual.ok) {
@@ -89,7 +93,9 @@ export const buscarCotacaoAuto = async () => {
 };
 
 export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra, cotacaoVenda, enviarEmail) => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const checkQuery = `
             SELECT * FROM cotacao
             WHERE user_id = $1 AND nome = $2;
@@ -124,7 +130,9 @@ export const salvarCotacao = async (userId, nome, dataHoraCotacao, cotacaoCompra
 };
 
 export const getAllCotacao = async (userId) => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const query = `
             SELECT * FROM cotacao
             WHERE user_id = $1
@@ -163,7 +171,9 @@ export const enviarEmail = async (destinatario, assunto, corpo) => {
 };
 
 export const updateSaveCotacao = async () => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const selectQuery = `
                 SELECT co.*, u.email FROM cotacao co JOIN users u ON co.user_id = u.id WHERE co.nome = 'Atual' AND co.enviaremail = true
         `;

@@ -1,14 +1,17 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { db } from "../db/db.js";
 import dotenv from 'dotenv';
+import { createDbClient } from "../db/db.js";
 
 dotenv.config();
 
 export const createUser = async (req, res) => {
   const { nome, email, senha, admin } = req.body;
 
+  const db = createDbClient();
+
   try {
+    await db.connect();
     const emailQuery = `SELECT * FROM users WHERE email = $1;`;
     const emailResult = await db.query(emailQuery, [email]);
 
@@ -32,13 +35,18 @@ export const createUser = async (req, res) => {
   } catch (err) {
     console.error('Erro ao cadastrar usuário:', err);
     res.status(500).json({ error: 'Erro interno do servidor' });
+  } finally {
+    await db.end();
   }
 };
 
 export const login = async (req, res) => {
   const { email, senha } = req.body;
+  
+  const db = createDbClient();
 
   try {
+    await db.connect();
     const query = `SELECT * FROM users WHERE email = $1;`;
     const result = await db.query(query, [email]);
 

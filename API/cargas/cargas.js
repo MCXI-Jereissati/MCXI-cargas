@@ -1,21 +1,25 @@
-import { db } from "../db/db.js";
 import fetch from 'node-fetch'; 
-import cheerio from 'cheerio';
+import { load } from 'cheerio';
 import nodemailer from 'nodemailer';
+import { createDbClient } from "../db/db.js";
 
 export const buscarCargas = async (req, userId) => {
+    
+  const db = createDbClient();
+
     const { parametro1, parametro2, salvarNoBanco } = req.body;
 
     const url = `https://www.tapcargo.com/en/Tracking-Results?countryCode=${parametro1}&consignmentNote=${parametro2}`;
 
     try {
+        await db.connect();
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Erro ao buscar os dados. Status da resposta: ' + response.status);
         }
 
         const html = await response.text();
-        const $ = cheerio.load(html);
+        const $ = load(html);
 
         const targetSection = $('p.txt-ms-regular:contains("State")').closest('section');
         const stateValue = $('p.txt-ms-regular:contains("State")').closest('div.row').find('p.txt-ms-bold').text().trim().split(',').slice(0, 2).join(',');
@@ -64,18 +68,20 @@ export const buscarCargas = async (req, userId) => {
 };
 
 export const buscarCargasAuto = async (parametro1, parametro2) => {
+    const db = createDbClient();
     const userId = '';
 
     const url = `https://www.tapcargo.com/en/Tracking-Results?countryCode=${parametro1}&consignmentNote=${parametro2}`;
 
     try {
+        await db.connect();
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Erro ao buscar os dados. Status da resposta: ' + response.status);
         }
 
         const html = await response.text();
-        const $ = cheerio.load(html);
+        const $ = load(html);
 
         const targetSection = $('p.txt-ms-regular:contains("State")').closest('section');
         const stateValue = $('p.txt-ms-regular:contains("State")').closest('div.row').find('p.txt-ms-bold').text().trim().split(',').slice(0, 2).join(',');
@@ -120,7 +126,9 @@ export const buscarCargasAuto = async (parametro1, parametro2) => {
 };
 
 export const salvarCargas = async (userId, countryCode, consignmentNote, data) => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const codigo = countryCode + '-' + consignmentNote;
         const { state, departure, arrival } = data.DadosAtuais;
         const ultimoHistorico = data.Historico[data.Historico.length - 1];
@@ -150,7 +158,9 @@ export const salvarCargas = async (userId, countryCode, consignmentNote, data) =
 };
 
 export const getAllCargas = async (userId) => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const query = `
             SELECT * FROM cargas
             WHERE user_id = $1
@@ -163,7 +173,9 @@ export const getAllCargas = async (userId) => {
 };
 
 export const getCargasById = async (userId, numCodigoAereo) => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const query = `
             SELECT * FROM cargas
             WHERE user_id = $1 AND numCodigoAereo = $2
@@ -176,7 +188,9 @@ export const getCargasById = async (userId, numCodigoAereo) => {
 };
 
 export const deleteCargasById = async (userId, numCodigoAereo) => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const query = `
             DELETE FROM cargas
             WHERE user_id = $1 AND numCodigoAereo = $2
@@ -215,7 +229,9 @@ export const enviarEmail = async (destinatario, assunto, corpo) => {
 
 
 export const updateSaveCargas = async () => {
+    const db = createDbClient();
     try {
+        await db.connect();
         const selectQuery = `
             SELECT c.*, u.email FROM cargas c JOIN users u ON c.user_id = u.id
         `;
