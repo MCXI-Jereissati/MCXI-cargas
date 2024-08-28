@@ -1,17 +1,23 @@
 import pkg from 'pg';
 import dotenv from 'dotenv';
 
+dotenv.config();
+
 export function createDbClient() {
-  dotenv.config();
+  const { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT } = process.env;
+
+  if (!DB_USER || !DB_HOST || !DB_DATABASE || !DB_PASSWORD || !DB_PORT) {
+    throw new Error('Uma ou mais variáveis de ambiente para conexão com o banco de dados não foram definidas.');
+  }
 
   return new pkg.Client({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-    connectionTimeoutMillis: 10000, 
-    query_timeout: 30000,  
+    user: DB_USER,
+    host: DB_HOST,
+    database: DB_DATABASE,
+    password: DB_PASSWORD,
+    port: DB_PORT,
+    connectionTimeoutMillis: 10000,
+    query_timeout: 30000,
     keepAlive: true,
   });
 }
@@ -53,42 +59,25 @@ const createTableCotacao = `
   );
 `;
 
-async function connectAndCreateTables(retries = 5, delay = 1000) {
-  for (let i = 0; i < retries; i++) {
-    const db = createDbClient();
-    try {
-      await db.connect();
-      console.log('Conectado ao PostgreSQL.');
+async function createTables(db) {
+  await Promise.all([
+    db.query(createTableUser),
+    db.query(createTableCargas),
+    db.query(createTableCotacao),
+  ]);
+  console.log('Tabelas criadas com sucesso.');
+}
 
-      await Promise.all([
-        db.query(createTableUser),
-        db.query(createTableCargas),
-        db.query(createTableCotacao)
-      ]);
-
-      console.log('Tabelas criadas com sucesso.');
-      db.end();
-      return;
-    } catch (err) {
-      console.error('Erro na conexão ou criação de tabelas:', err);
-
-      if (
-        err.code === 'ECONNREFUSED' || 
-        err.code === 'ETIMEDOUT' || 
-        err.code === 'ECONNRESET' || 
-        err.code === 'ECONNABORTED'
-      ) {
-        console.error(`Tentativa ${i + 1} falhou, tentando novamente em ${delay / 1000} segundos...`);
-        await db.end();
-        await new Promise(resolve => setTimeout(resolve, delay));
-        delay *= 2;
-      } else {
-        await db.end();
-        throw err;
-      }
-    }
+async function connectAndCreateTables(db) {
+  try {
+    await db.connect();
+    console.log('Conectado ao PostgreSQL.');
+    await createTables(db);
+    console.log('Conexão estável.');
+  } catch (err) {
+    console.error('Erro na conexão ou criação de tabelas:', err.message);
+    throw err;
   }
-  console.error('Falha após múltiplas tentativas.');
 }
 
 async function maintainConnection() {
@@ -96,36 +85,39 @@ async function maintainConnection() {
 
   while (true) {
     try {
-      dotenv.config();
-
       if (db) {
         await db.end();
+        console.log('Conexão anterior encerrada.');
       }
-
+      
       db = createDbClient();
-      await connectAndCreateTables();
-      console.log('Conexão estável.');
-      break;
+
+      db.on('error', async (err) => {
+        console.error('Erro na conexão com o PostgreSQL:', err.message);
+        await db.end();
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      });
+
+      db.on('end', async () => {
+        console.error('Conexão com o PostgreSQL encerrada. Tentando reconectar...');
+      });
+
+      await connectAndCreateTables(db);
+      break; 
+
     } catch (err) {
       console.error('Tentando reconectar após perda de conexão...');
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
-
-  db.on('end', async () => {
-    console.error('Conexão com o PostgreSQL encerrada. Tentando reconectar...');
-    await maintainConnection();
-  });
-
-  db.on('error', async (err) => {
-    console.error('Erro na conexão com o PostgreSQL:', err);
-    await maintainConnection();
-  });
-
-  await db.connect();
 }
 
+process.on('uncaughtException', (err) => {
+  console.error('Erro não tratado:', err.message);
+  console.error('A aplicação tentará continuar a execução...');
+});
+
 maintainConnection().catch(err => {
-  console.error('Erro fatal:', err);
+  console.error('Erro fatal:', err.message);
   process.exit(1);
 });
