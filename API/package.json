@@ -7,7 +7,7 @@
   "scripts": {
     "install-prod": "npm install --omit=dev",
     "start": "npm-run-all --parallel api tailwind",
-    "api": "pm2 start index.js --name mcxi-cargas",
+    "api": "pm2 start index.js --name mcxi-cargas --no-daemon",
     "tailwind": "npx tailwindcss -i ./public/style/input.css -o ./public/dist/output.css",
     "start:prod": "pm2 start index.js --name mcxi-cargas",
     "stop": "pm2 stop mcxi-cargas",
