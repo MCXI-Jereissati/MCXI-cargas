@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "install-prod": "npm install --omit=dev",
-    "start": "npm run tailwind && npm run api",
-    "api": "pm2 start index.js --name mcxi-cargas --watch",
+    "start": "npm-run-all --parallel api tailwind",
+    "api": "pm2 start index.js --name mcxi-cargas",
     "tailwind": "npx tailwindcss -i ./public/style/input.css -o ./public/dist/output.css --watch",
     "start:prod": "pm2 start index.js --name mcxi-cargas",
     "stop": "pm2 stop mcxi-cargas",
