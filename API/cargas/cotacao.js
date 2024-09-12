@@ -75,7 +75,7 @@ export const buscarCotacaoAuto = async () => {
     try {
         await db.connect();
         const [responseAtual, responseAnterior] = await Promise.all([fetch(urlAtual), fetch(urlAnterior)]);
-        
+
         if (!responseAtual.ok) {
             throw new Error('Erro ao buscar os dados da cotação atual. Status da resposta: ' + responseAtual.status);
         }
@@ -90,7 +90,19 @@ export const buscarCotacaoAuto = async () => {
         return { atual: jsonDataAtual, anterior: jsonDataAnterior };
     } catch (error) {
         console.error('Erro ao buscar cotação automática:', error);
-        throw new Error('Erro ao buscar cotação automática: ' + error.message);
+        const query = `SELECT * FROM cotacao WHERE nome IN ('Atual', 'Anterior') ORDER BY dataHoraCotacao DESC LIMIT 2`;
+        const result = await db.query(query);
+
+        const cotacoes = result.rows.reduce((acc, row) => {
+            acc[row.nome.toLowerCase()] = row;
+            return acc;
+        }, {});
+
+        if (Object.keys(cotacoes).length > 0) {
+            return { atual: cotacoes.atual || {}, anterior: cotacoes.anterior || {} };
+        } else {
+            throw new Error('Nenhuma cotação anterior encontrada no banco de dados.');
+        }
     } finally {
         await db.end();
     }

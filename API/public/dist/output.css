@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.10 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.3 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -813,6 +813,10 @@ video {
        column-gap: 2rem;
 }
 
+.gap-y-1 {
+  row-gap: 0.25rem;
+}
+
 .gap-y-1\.5 {
   row-gap: 0.375rem;
 }
@@ -954,6 +958,11 @@ video {
 .px-6 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+.py-0 {
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 
 .py-0\.5 {
